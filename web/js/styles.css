@@ -1,0 +1,74 @@
+/* 
+    Document   : styles
+    Created on : 06-May-2012, 17:14:18
+    Author     : pszgp
+    Description:
+        Purpose of the stylesheet follows.
+*/
+
+root { 
+    display: block;
+}
+
+#header {
+    background-color: #64A0DE;
+    font-size: 18pt;
+    font-family: Tahoma, Garamond, Courier, Arial;
+    font-color: white;
+    width: 100%;
+    height: 70pt;
+    text-align: center;
+}
+A:link {text-decoration: none; color: black;}
+A:visited {text-decoration: none; color:black;}
+A:active {text-decoration: none; color:black;}
+A:hover {text-decoration: underline; color: black;}
+
+.a_header {
+    text-decoration: none;    
+    font-color: white;
+    cursor: hand;
+}
+.a_header:hover{
+    text-decoration: none;    
+    font-color:white;
+    cursor: hand;
+}
+
+#users_left_menu {
+    top: 0pt;
+    background-color: #64A0DE;
+    font-size: 14 pt;
+    font-family: Tahoma, Garamond, Courier, Arial;
+    font-color: white;
+    width: 150pt;
+    height: 600pt;
+}
+
+.menu_title{
+    font-size: 20pt;
+    font-color: white;
+    font-family: inherit;    
+}
+
+#users_content{
+    position: absolute; 
+    left: 270px;
+    widht: 750px;
+    top: 120px; 
+    color: black;
+    font-size: 14 pt;
+}
+
+#user_data{
+    position: absolute; 
+    left: 270px;
+    right: 270px;
+    top: 420px; 
+    color: black;
+    font-size: 12 pt;
+}
+
+.user{
+    font-size: 14pt;    
+}
