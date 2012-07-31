@@ -8,14 +8,13 @@ package homework.nott.webcontroller;
  *
  * @author pszgp, 10 may 2012
  */
-import homework.nott.hwdb.*;
-import homework.nott.mysql.HWMySQL;
-import java.util.ArrayList;
-import java.util.HashMap;
+import homework.nott.util.CSVParser;
+import java.util.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.portlet.ModelAndView;
+import org.springframework.web.servlet.ModelAndView;
 import org.springframework.stereotype.Controller;
 
 @Controller
@@ -23,51 +22,68 @@ public class DeviceController {
  
     @RequestMapping("/device")      
     public ModelAndView device(HttpServletRequest request, HttpServletResponse response) { 
-       
-        /*ModelAndView mvHWDB = new ModelAndView();
-        mvHWDB.setViewName("device");
-        String device = null;
-        try{ 
-            device = request.getParameter("ip");      
-            System.out.println("selected device: " + device);
-        }catch(Exception e){e.printStackTrace();};
-        //mvHWDB.addObject("deviceDataUsage", device);   
-        request.setAttribute("deviceIp", device);
+               
+        ModelAndView mv = new MW().getModelView(request, response, "device");
         
-        HwdbEngine hw = HwdbEngine.getInstance();
+        CSVParser csv = new CSVParser();
         
-        Object users = hw.retrieveUsersNamesFromHWDB();
-        Object devicesNames = hw.retrieveDeviceNamesFromHWDB();
-        ArrayList<Device> devices = hw.retrieveDevicesDetailsFromHWDB();
-            
-        ArrayList<DeviceHistory> devicesHistory = HWDevicesEngine.getInstance().getDevicesHistory();
-        HashMap<String, Integer> devicesTotals = HWDevicesEngine.getInstance().getDevicesHistoryTotal(devicesHistory);
-        for (Device d: devices)
+        String deviceIp = (String)request.getParameter("ip");
+        TreeMap<Integer, Long> deviceDataMonths=new TreeMap();
+        TreeMap<Integer, Long> deviceDataDays = new TreeMap(); 
+        Set<String> devicesIps = csv.getDevicesIps();
+        TreeMap<String, TreeMap<Integer, TreeMap<Integer, TreeMap<Integer, TreeMap<Integer, Integer>>>>> devicesUsage = 
+                csv.getDevicesUsageHours(devicesIps);
+        TreeMap<String, TreeMap<Integer, TreeMap<Integer, TreeMap<Integer, Long>>>> dataDays = 
+                csv.getDevicesUsageDays(devicesUsage);
+        
+        if (deviceIp!=null)
         {
-            try{
-                d.setNbytes(devicesTotals.get(d.getIp()));
-            }catch(Exception e){e.printStackTrace();}
-        }
+            System.out.println("device ip: " + deviceIp);
             
-        mvHWDB.addObject("users", users);
-        mvHWDB.addObject("deviceNames", devicesNames);                       
-        mvHWDB.addObject("devicesHistory", devicesHistory);            
-        mvHWDB.addObject("devices", devices); 
-        
-        //send variables through the request parameter instead of mv, this works
-        request.setAttribute("users", users);
-        request.setAttribute("devicesNames", devicesNames);
-        request.setAttribute("devices", devices);
-        request.setAttribute("devicesHistory", devicesHistory);
-        
-        //Object devicesMonths = new DashboardController().getDevicesPerMonths(devices);
-        //mvHWDB.addObject("devicesPerMonths", devicesMonths);
-        //request.setAttribute("devicesPerMonths", devicesMonths);
-        
-        return mvHWDB;*/
-        
-        ModelAndView mv = ModelViewForController.getMVForController(request);
-        mv.setView("device");
+            Object year = request.getParameter("year");
+            if (year==null)
+                year = new Date(System.currentTimeMillis()).getYear()+1900;
+            int yearId = (Integer)year;
+            
+            TreeMap<String, TreeMap<Integer, TreeMap<Integer, Long>>> data = 
+                csv.getDevicesUsageMonths(devicesUsage);
+            
+            if (data.containsKey(deviceIp))
+            {
+                deviceDataMonths = data.get(deviceIp).get(year);
+            }
+            System.out.println("deviceDataMonths: " + new MW().getDateDeviceUsage(deviceDataMonths, true));
+            mv.addObject("deviceDataMonths", new MW().getDateDeviceUsage(deviceDataMonths, true));
+            mv.addObject("deviceIntMonths", deviceDataMonths);
+            String month = (String)request.getParameter("month");
+            Object monthId = null;
+            if (month!=null)
+            {
+                System.out.println("month: " + month);
+                MW.MONTHS m = MW.MONTHS.valueOf(month);
+                monthId = MW.MONTHS.getIndexOf(m);              
+            }
+            else
+            {                
+                monthId = new Date(System.currentTimeMillis()).getMonth()+1;
+            }
+            int monthIdInt = (Integer)monthId;
+            System.out.println("month id: " + monthId+" year id: "+year); 
+            deviceDataDays = dataDays.get(deviceIp).get(yearId).get(monthIdInt);
+            
+            mv.addObject("deviceDataDays", deviceDataDays);//this.getDateDeviceUsage(deviceDataDays, false));
+                               
+            request.setAttribute("month", month);
+            request.setAttribute("deviceIp", deviceIp);
+        }
+                
+        return mv;
+    }
+    
+    //26 july 2012
+    @RequestMapping("/deviceday")      
+    public ModelAndView deviceday(HttpServletRequest request, HttpServletResponse response) { 
+        ModelAndView mv = new MW().getModelView(request, response, "deviceday");
         return mv;
     }
     

@@ -4,6 +4,10 @@
     Author     : pszgp
 --%>
 
+    <link type="text/css" rel="stylesheet" href="js/population.css"/>
+    <div id="chart"></div>
+    <script type="text/javascript" src="js/devices_mock.js"></script>
+
 Example from: https://gist.github.com/1166403#file_index.html
 <!-- axis component d3 sample from: https://gist.github.com/1166403#file_index.html -->
 <style type="text/css">

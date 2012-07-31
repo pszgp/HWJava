@@ -5,12 +5,6 @@
 package homework.nott.webcontroller;
 
 import com.google.gson.Gson;
-import homework.nott.hwdb.HWDBClient;
-import com.sun.grizzly.websockets.WebSocketEngine;
-import homework.nott.hwdb.*;
-import homework.nott.mysql.HWMySQL;
-import homework.nott.mysql.HWTimestamp;
-import homework.nott.mysql.MySQLtoCSVDataExtractionEngine;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -44,15 +38,12 @@ public class DashboardAdminController {// implements Runnable {
     static ModelAndView mvHWDB = new ModelAndView();
     private int MAX_ROWS_RESULT_SET = 1000;
     
-    private HwdbEngine hw = HwdbEngine.getInstance();
-    private HWMySQLEngine hwMysql = HWMySQLEngine.getInstance();
-            
     private Connection conn;
     
     @RequestMapping("/dashboardadmin")///update/devices")      
     public ModelAndView dashboardadminUpdateDevices(HttpServletRequest request, HttpServletResponse response) { 
        
-        mvHWDB.setViewName("dashboardadmin");
+       /* mvHWDB.setViewName("dashboardadmin");
                 
         //subscribe to hwdb when the session starts
         HttpSession session = request.getSession(true);
@@ -77,7 +68,7 @@ public class DashboardAdminController {// implements Runnable {
             
             //devices = this.getDevicesAllDetails(devices);           
             
-            System.out.println("DEVICES...");
+       /*     System.out.println("DEVICES...");
             
             //mvHWDB.addObject("devicesPerMonths", this.getDevicesPerMonths(devices));
             
@@ -107,11 +98,11 @@ public class DashboardAdminController {// implements Runnable {
         }
         
         session.setMaxInactiveInterval(MAX_SESSION_INTERVAL);
-        
+        */
         return mvHWDB;
     }
     
-    @RequestMapping("/dashboardadmin/update/flowscsv")      
+    /*@RequestMapping("/dashboardadmin/update/flowscsv")      
     public ModelAndView dashboardadminUpdateFlowsCSV(HttpServletRequest request, HttpServletResponse response) { 
        
         mvHWDB.setViewName("dashboardadmin");
@@ -137,7 +128,7 @@ public class DashboardAdminController {// implements Runnable {
         session.setMaxInactiveInterval(MAX_SESSION_INTERVAL);
                         
         return mvHWDB;
-    }
+    }*/
     
 }
 

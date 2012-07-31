@@ -40,9 +40,9 @@ A:hover {text-decoration: underline; color: black;}
     background-color: #64A0DE;
     font-size: 14 pt;
     font-family: Tahoma, Garamond, Courier, Arial;
-    font-color: white;
+    font-color: green;
     width: 150pt;
-    height: 600pt;
+    height: 100%;
 }
 
 .menu_title{

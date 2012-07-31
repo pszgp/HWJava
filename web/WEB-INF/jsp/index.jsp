@@ -1,4 +1,4 @@
-<jsp:forward page="dashboard.htm"></jsp:forward>
+<jsp:forward page="test.htm"></jsp:forward>
 
 <!--<%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"

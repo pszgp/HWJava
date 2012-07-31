@@ -1,0 +1,39 @@
+{
+ "name": "devices",
+ "children": [
+  {
+   "name": "device1",
+   "children": [
+    {
+     "name": "day_1",
+     "children": [
+      {"name": "n1_d1_h1", "size": 393},
+      {"name": "n1_d2_h2", "size": 74}
+     ]
+    },
+    {
+     "name": "day_2",
+     "children": [
+      {"name": "n1_d2_h1", "size": 353},
+      {"name": "n1_d2_h2", "size": 573},
+      {"name": "n1_d2_h3", "size": 784}
+     ]
+    }
+   ]
+  },
+  {
+   "name": "device2",
+   "children": [
+    {"name": "n2_d1", "size": 17010},
+    {"name": "n2_d2", "size": 5842},
+    {
+     "name": "n2_d3",
+     "children": [
+      {"name": "n2_d3_h1", "size": 1983},
+      {"name": "n2_d3_h2", "size": 2047}
+     ]
+    }
+   ]
+  }
+ ]
+}

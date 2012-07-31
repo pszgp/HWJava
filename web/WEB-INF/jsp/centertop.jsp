@@ -9,7 +9,7 @@
                 document.getElementById("currentYear").innerHTML = new Date().getFullYear();                
             </script>
             <!--${deviceIp}${month}-->
-            <h2>Month: <select id="menu_calendar" size="1">
+            <!--h2>Month: <select id="menu_calendar" size="1">
                     <option value="JANUARY" selected="selected">JANUARY</option>
                     <option value="FEBRUARY">FEBRUARY</option>
                     <option value="MARCH">MARCH</option>
@@ -49,6 +49,6 @@
                 }
             }
             
-            </script>      
+            </script-->      
             
  

@@ -1,0 +1,1 @@
+A recreation of a [Protovis example](http://mbostock.github.com/protovis/ex/crimea-stacked-bar.html) in [D3](http://mbostock.github.com/d3/), using the [stack layout](https://github.com/mbostock/d3/wiki/Stack-Layout).

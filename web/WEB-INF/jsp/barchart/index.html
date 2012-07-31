@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='UTF-8'/>
+  <title>Dance.js - The Barchart Dance</title>
+  <link rel='stylesheet' href='barchart.css'>
+  <script src='http://documentcloud.github.com/underscore/underscore.js'></script>
+  <script src='https://raw.github.com/michael/data/a38f5fd92a5490dc5ab6a2e95e88ecba2e644c71/data.js'></script>
+  <script src='http://code.jquery.com/jquery-1.7.2.min.js'></script>
+  <script src='https://raw.github.com/michael/dance/96cb9a6384acce19202275c6dce9b7fbdac87763/dance.js'></script>
+
+  <!-- Countries data -->
+  <script src='countries.js'></script>
+  <!-- Dance Performers -->
+  <script src="barchart.js"></script>
+
+  <script>    
+    $(function() {
+      var countries = new Data.Collection(countries_data);
+      window.barchart = new Barchart({});
+
+      barchart.update(countries, "gdp");
+
+      // Update
+      function update() {
+        var language = $('#language').val();
+        var query = {};
+        if (language) query["languages"] = [ language ];
+        var items = countries.find(query);
+        barchart.update(items, $('#property').val());
+      }
+
+      $('#property').change(update);
+      $('#language').change(update);
+    });
+  </script>
+
+</head>
+<body>
+  <div id='container'>
+    <select id="property">
+      <option value="gdp">GDP (thousands, per capita)</option>
+      <option value="population">Population (millions)</option>
+    </select>
+    <select id="language">
+      <option value="">All</option>
+      <option value="English">English</option>
+      <option value="French">French</option>
+      <option value="German">German</option>
+      <option value="Greek">Greek</option>
+      <option value="Spanish">Spanish</option>
+      <option value="Scottish Gaelic">Scottish Gaelic</option>
+    </select>
+    <div id='canvas'></div>
+  </div>
+</body>
+</html>

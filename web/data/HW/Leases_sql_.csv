@@ -1,0 +1,8 @@
+action,hostname,ipaddr,macaddr
+add,helsing,10.2.0.1,00:22:fa:66:de:78
+del,NULL,10.2.0.5,00:26:B0:5D:97:59
+del,NULL,10.2.0.9,00:1D:7D:4C:12:B1
+del,NULL,10.2.0.13,00:23:12:05:23:B6
+del,NULL,10.2.0.17,60:c5:47:8c:f9:0a
+del,NULL,10.2.0.21,00:21:6a:55:70:b2
+del,NULL,10.2.0.25,b8:ff:61:c5:bb:73

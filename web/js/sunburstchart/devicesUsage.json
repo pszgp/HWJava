@@ -1,0 +1,196 @@
+{
+"name":"devices", 
+"children": [
+
+	{"name": "10.2.0.1", "children":[
+		{"name": "2012", "children":[
+			{"name": "4", "children":[
+				{"name": "25", "children":[
+					{"name": "18", "size":78530591}
+					,{"name": "19", "size":28882765}
+				]}
+				,{"name": "26", "children":[
+					{"name": "12", "size":210678}
+					,{"name": "13", "size":87192108}
+					,{"name": "14", "size":77916964}
+				]}
+				,{"name": "27", "children":[
+					{"name": "12", "size":81197}
+					,{"name": "13", "size":113816}
+					,{"name": "14", "size":3743}
+					,{"name": "15", "size":58094692}
+					,{"name": "16", "size":9911202}
+				]}
+				,{"name": "30", "children":[
+					{"name": "17", "size":1298847}
+					,{"name": "18", "size":78255448}
+					,{"name": "19", "size":126563494}
+				]}
+			]}
+			,{"name": "5", "children":[
+				{"name": "1", "children":[
+					{"name": "12", "size":215519}
+					,{"name": "13", "size":918275}
+					,{"name": "14", "size":757894}
+					,{"name": "15", "size":1042609}
+					,{"name": "16", "size":243020}
+					,{"name": "17", "size":3498}
+				]}
+				,{"name": "2", "children":[
+					{"name": "14", "size":332090}
+					,{"name": "15", "size":93772}
+					,{"name": "16", "size":29700569}
+				]}
+				,{"name": "3", "children":[
+					{"name": "12", "size":89098438}
+					,{"name": "13", "size":9910338}
+					,{"name": "14", "size":39212082}
+					,{"name": "15", "size":414279}
+				]}
+				,{"name": "4", "children":[
+					{"name": "18", "size":88756135}
+					,{"name": "19", "size":19494449}
+					,{"name": "20", "size":59107634}
+					,{"name": "21", "size":88276551}
+				]}
+				,{"name": "8", "children":[
+					{"name": "18", "size":9969850}
+					,{"name": "19", "size":9880787}
+					,{"name": "20", "size":104659610}
+					,{"name": "21", "size":14750350}
+				]}
+				,{"name": "9", "children":[
+					{"name": "18", "size":30758877}
+					,{"name": "19", "size":69357324}
+					,{"name": "20", "size":128919414}
+					,{"name": "21", "size":99160378}
+				]}
+				,{"name": "10", "children":[
+					{"name": "12", "size":9910694}
+					,{"name": "13", "size":78957389}
+					,{"name": "14", "size":99769268}
+					,{"name": "15", "size":29881703}
+				]}
+				,{"name": "11", "children":[
+					{"name": "14", "size":8662359}
+					,{"name": "15", "size":38363734}
+					,{"name": "16", "size":48590697}
+					,{"name": "19", "size":30618}
+					,{"name": "20", "size":153163}
+					,{"name": "21", "size":45057}
+					,{"name": "22", "size":58217}
+					,{"name": "23", "size":9990}
+				]}
+				,{"name": "13", "children":[
+					{"name": "22", "size":57055845}
+					,{"name": "23", "size":226315240}
+				]}
+				,{"name": "14", "children":[
+					{"name": "12", "size":19169710}
+					,{"name": "13", "size":19131322}
+					,{"name": "14", "size":94868}
+					,{"name": "15", "size":73562996}
+					,{"name": "16", "size":225707}
+					,{"name": "18", "size":62897}
+					,{"name": "20", "size":46486302}
+					,{"name": "21", "size":133622895}
+					,{"name": "22", "size":207831446}
+					,{"name": "23", "size":151188646}
+				]}
+				,{"name": "15", "children":[
+					{"name": "10", "size":110533}
+					,{"name": "11", "size":94685619}
+					,{"name": "12", "size":68722768}
+					,{"name": "15", "size":94932013}
+					,{"name": "17", "size":132494191}
+					,{"name": "18", "size":170643681}
+					,{"name": "20", "size":144681192}
+				]}
+				,{"name": "16", "children":[
+					{"name": "12", "size":34851}
+					,{"name": "13", "size":319012}
+				]}
+				,{"name": "22", "children":[
+					{"name": "12", "size":2070323}
+					,{"name": "13", "size":76455093}
+					,{"name": "14", "size":41416557}
+					,{"name": "15", "size":19035658}
+				]}
+				,{"name": "25", "children":[
+					{"name": "14", "size":57323116}
+				]}
+				,{"name": "29", "children":[
+					{"name": "12", "size":2437973}
+					,{"name": "15", "size":19458293}
+					,{"name": "16", "size":252957}
+				]}
+			]}
+			,{"name": "6", "children":[
+				{"name": "11", "children":[
+					{"name": "17", "size":335383}
+				]}
+				,{"name": "12", "children":[
+					{"name": "12", "size":19858091}
+				]}
+				,{"name": "14", "children":[
+					{"name": "16", "size":23129735}
+					,{"name": "17", "size":10269}
+				]}
+				,{"name": "18", "children":[
+					{"name": "13", "size":66865060}
+				]}
+				,{"name": "21", "children":[
+					{"name": "14", "size":74803}
+				]}
+				,{"name": "26", "children":[
+					{"name": "15", "size":24916}
+					,{"name": "19", "size":59135}
+				]}
+				,{"name": "27", "children":[
+					{"name": "14", "size":92980}
+				]}
+			]}
+			,{"name": "7", "children":[
+				{"name": "4", "children":[
+					{"name": "20", "size":94028}
+					,{"name": "21", "size":5969}
+				]}
+				,{"name": "10", "children":[
+					{"name": "13", "size":135153}
+					,{"name": "14", "size":6924}
+					,{"name": "15", "size":3111}
+					,{"name": "16", "size":19452}
+				]}
+				,{"name": "11", "children":[
+					{"name": "11", "size":2158}
+					,{"name": "12", "size":2950}
+					,{"name": "13", "size":851}
+					,{"name": "14", "size":1000}
+					,{"name": "15", "size":698}
+				]}
+				,{"name": "12", "children":[
+					{"name": "12", "size":840}
+				]}
+				,{"name": "14", "children":[
+					{"name": "19", "size":16058}
+				]}
+				,{"name": "16", "children":[
+					{"name": "11", "size":2662}
+				]}
+				,{"name": "17", "children":[
+					{"name": "12", "size":974}
+				]}
+				,{"name": "19", "children":[
+					{"name": "11", "size":1100}
+				]}
+				,{"name": "20", "children":[
+					{"name": "12", "size":730}
+				]}
+				,{"name": "24", "children":[
+					{"name": "13", "size":4127}
+				]}
+			]}
+		]}
+	]}
+]
+}

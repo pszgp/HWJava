@@ -2,7 +2,11 @@
 <web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee" 
 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
 xsi:schemaLocation="http://java.sun.com/xml/ns/javaee 
-            http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
+            http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+            
+           xmlns:c="http://java.sun.com/jsp/jstl/core"
+           xmlns:fmt="http://java.sun.com/jsp/jstl/fmt">
+               
     <context-param>
         <param-name>contextConfigLocation</param-name>
         <param-value>/WEB-INF/applicationContext.xml</param-value>
@@ -56,5 +60,9 @@ xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
             <filter-name>springSecurityFilterChain</filter-name>
             <url-pattern>/test*</url-pattern>
     </filter-mapping-->
+    
+    <!-- 9 july 2012: xmlns:c, xmlns:fmt use forum.springsource.org to solve the error: 
+            http://java...../core not found in web.xml 
+    -->
         
 </web-app>

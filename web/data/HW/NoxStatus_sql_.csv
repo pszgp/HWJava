@@ -1,0 +1,4 @@
+device,source,state
+00:22:fa:66:de:78,policy,permit
+60:c5:47:8c:f9:0a,User,permit
+00:24:e8:a2:f1:66,policy,permit

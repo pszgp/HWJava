@@ -18,8 +18,9 @@
         <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %> 
         <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>      
         
-        <script type="text/javascript" 
-		src="http://mbostock.github.com/d3/d3.v2.js?2.9.1"></script>
+        <!--script type="text/javascript" 
+		src="http://mbostock.github.com/d3/d3.v2.js?2.9.1"></script-->
+        <script type="text/javascript" src="js/d3/d3.v2.min.js"></script>
 
         <link rel="stylesheet" href="js/styles.css"/>
         
