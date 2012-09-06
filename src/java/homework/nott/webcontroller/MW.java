@@ -26,6 +26,18 @@ public class MW {
     //private int MAX_ROWS_RESULT_SET = 1000;  
     
     CSVParser csv = new CSVParser();
+
+    private Set<Integer> getYearsOfData(TreeMap<String, TreeMap<Integer, TreeMap<Integer, Long>>> data) {
+        Set<Integer> years = new HashSet();
+        for (String device: data.keySet())
+        {
+            for (Integer year: data.get(device).keySet())
+            {
+                years.add(year);
+            }
+        }
+        return years;
+    }
     
     public enum MONTHS{NULL, JANUARY, FEBRUARY, MARCH, APRIL, MAY, JUNE, JULY, AUGUST, SEPTEMBER, OCTOBER, NOVEMBER, DECECMBER;
    
@@ -67,17 +79,25 @@ public class MW {
                 devicesUsage = csv.getDevicesUsageHours(devicesIps);
         TreeMap<String, TreeMap<Integer, TreeMap<Integer, Long>>> data = 
                 csv.getDevicesUsageMonths(devicesUsage);
+        System.out.println("MW: data="+data);
+        System.out.println("MW: devicesIps = " + devicesIps);
+        System.out.println("MW: devicesUsage = " + devicesUsage);
         TreeMap<String, Long> devicesTotal = csv.getTotalUsageDevices(devicesUsage);
         ArrayList<Device> devices = new DevicesDetailsCSV().getDevices();
+        
+        Set<Integer> years = getYearsOfData(data);
                 
         System.out.println("devicesIps" + devicesIps);
         System.out.println("data"+data);
         System.out.println("devices: "+ devices);             
         
+        System.out.println("MW: devicesTotal=" + devicesTotal);
+        
         mv.addObject("devicesIps", devicesIps);
         mv.addObject("devicesTotal", devicesTotal);
         mv.addObject("dataMonths", data);
         mv.addObject("devices", devices);
+        mv.addObject("years", years);//27 aug 2012, add the years of data
         
         TreeMap<String, TreeMap<String, Long>> dataMonthsDevices = this.getDataMonthsDevices(data);//for each month the devices data, not for each device
         mv.addObject("dataMonthsDevices", dataMonthsDevices);//dashboard
@@ -85,6 +105,7 @@ public class MW {
         
         //31 july 2012: save the json file for the devices usage
         
+        System.out.println("devicesUsage = " + devicesUsage);
         JSON.convertArraytoJSON(devicesUsage, "devicesUsage.json");//to copy then in js/sunburstchart/
         
         return mv;
@@ -93,6 +114,7 @@ public class MW {
     public ArrayList<DateDeviceUsage> getDateDeviceUsage(TreeMap<Integer, Long> usage, boolean months)
     {
         ArrayList<DateDeviceUsage> usageDate = new ArrayList();
+        System.out.println("usage for device is: " + usage);
         for (int date: usage.keySet())
         {
             DateDeviceUsage ddu = new DateDeviceUsage(date+"", usage.get(date));

@@ -24,7 +24,7 @@ public class CSVParser {
     public ArrayList<TreeMap<String, Object>> getRecords(String table)
     {
         ArrayList<TreeMap<String, Object>> records = new ArrayList();
-        String file = "data/HW/"+table+"_sql_.csv";
+        String file = "data/London/"+table+".csv";//"data/HW/"+table+"_sql_.csv";
         try {
             //System.out.println(file);
             //System.out.println(new File(file).getAbsolutePath());
@@ -43,7 +43,10 @@ public class CSVParser {
                     return records;
                 String[] items = line.split(",");
                 TreeMap<String, Object> record = new TreeMap();
-                for (int i=0;i<items.length; i++)
+                System.out.println("line="+line+"!!!");
+                System.out.println(items.length+ " "+ fields.length);
+                //for (int i=0;i<items.length; i++)
+                for (int i=0;i<fields.length;i++)
                 {
                     record.put(fields[i], items[i]);
                 }
@@ -58,18 +61,20 @@ public class CSVParser {
     
     
     //11 july 2012
-    String fileSums = "data/HW/flows_sums_.csv";//on server (copy the file on server first)
+    String fileSums = "data/London/flows_sums.csv";
+                    //"data/HW/flows_sums_.csv";//on server (copy the file on server first)
     //String fileSums = "web/data/flows_sums_.csv";//local: 
 
     public Set<String> getDevicesIps(){
         
         //System.out.println(new File("/HWUIDashboard").exists());
-        //System.out.println(new File(".").getAbsolutePath());
+        System.out.println(new File(".").getAbsolutePath());
         
         TreeSet<String> ips = new TreeSet();
         //String file = "WEB-INF/data/flows_sums_.csv";
         try {
-            String fileLeases = "data/HW/"+"Leases"+"_sql_.csv";
+            String fileLeases = "data/London/"+"Leases"+"_sql_.csv";
+            System.out.println(new File(fileLeases).getAbsoluteFile());
             BufferedReader br = new BufferedReader(new FileReader(fileLeases));//fileSums));
             String line = null;
             int countLine=0;
@@ -113,12 +118,25 @@ public class CSVParser {
             {
                 countLine++;
                 if (countLine==1) continue;
+                
+                if (line.contains("\""))
+                        line = line.replaceAll("\"", "");//28 aug 2012
+                line = line.trim();
+                
+                System.out.println(line);
+                    
                 String[] items = line.split(",");
                 //The fields are: deviceIp,year,month,day,hour,nbytes
                 if (items.length == 6)
                 {
                     String deviceIp = items[0];
+                    if (deviceIp == null) continue;
+                    //if (deviceIp.startsWith("\""))
+                    //    deviceIp = deviceIp.substring(1);
                     
+                    System.out.println(deviceIp);
+                    System.out.println(devicesIps + " " + (devicesIps.contains(deviceIp)));
+                    //System.exit(0);
                     if (!devicesIps.contains(deviceIp))
                         continue;//ignore ips from devices outside the network
                     
@@ -157,6 +175,9 @@ public class CSVParser {
                     device.put(year, deviceYear);
                     
                     devicesUsage.put(deviceIp, device);
+                    
+                    System.out.println("fileSums - line: " + line);
+                
                 }
             }
             
@@ -312,7 +333,7 @@ public class CSVParser {
             Logger.getLogger(CSVParser.class.getName()).log(Level.SEVERE, null, ex);
             ex.printStackTrace();
         }
-        //System.out.println(devicesUsageMonths);
+        System.out.println("devicesUsageMonths=" + devicesUsageMonths);
         return devicesUsageMonths;
     }
     //get the sum per years per devices... not used yet in the UI!
@@ -439,7 +460,7 @@ public class CSVParser {
                 }
             }
         }
-        //System.out.println(totalUsage);
+        System.out.println("totalUsage=" + totalUsage);
         return totalUsage;
     }
     
