@@ -21,19 +21,19 @@
     <body>
 
         <div id="viz"></div>
-
-        <script type="text/javascript">
             
+        <script type="text/javascript">
         function drawBarCharts(data){
+            //alert(data);
             //var dataMonths = "${dataMonthsDevices}";
             var devicesIps = "${devicesIps}";
-            
+            //alert(devicesIps);
             devicesIps = devicesIps.substring(1, devicesIps.length-1);
             devicesIps = devicesIps.split(", ");
             //alert(dataMonthsDevices);
             
             var w = 960,
-            h = 500;
+            h = 400;//500;
             
             /*var matrix = [
                 ["1", 1500, 2868],
@@ -53,22 +53,27 @@
                     monthData = monthData.substring(1, monthData.length);
                 
                 var month = monthData.substring(0, monthData.indexOf("={"));
+                //alert("month" + month);
                 
                 var devicesData = monthData.substring(monthData.indexOf("={")+2, monthData.length);
                 if (devicesData.indexOf("}}")>0)
                     devicesData = devicesData.substring(0, devicesData.indexOf("}}"));
                 
                 devicesDataArray = devicesData.split(", ");
+                //alert(devicesDataArray);
                 var devicesUsage = {};
                 for (var j=0;j<devicesDataArray.length;j++)
                 {
                     var arrayData = devicesDataArray[j];
                     var device = arrayData.substring(0, arrayData.indexOf("="));        
                     var usage = arrayData.substring(arrayData.indexOf("=")+1, arrayData.length);
+                    //alert(usage);
                     usage = +usage;
-                    usage/=(1024*1024);
+                    //usage/=(1024*1024);//(1024*1024);
                     usage = Math.floor(usage);
                     devicesUsage[device] = usage;
+                    //exit;
+                    //alert(device+" "+month+" "+usage);
                 }
                 
                 var usage = [];
@@ -87,74 +92,45 @@
                 
                 var months = ["JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE", "JULY", "AUGUST", "SEPTEMBER", "OCTOBER", "NOVEMBER", "DECEMBER"];
                 //alert(months.indexOf("JULY"));
-                
-                /*matrix.sort(function(a,b){
-                        var indexA = months.indexOf(a);
-                        var indexB = months.indexOf(b);
-                        if ((indexA > -1) && (indexB > -1))
-                            return indexA > indexB ? 1: (indexA < indexB ? -1 : 0);
-                        //if(a.item1 === b.item1){
-                        //    return a.item2 > b.item2 ? 1 : a.item2 < b.item2 : -1 : 0;
-                    });
-                */
-            }
-            
-            for (var m=0;m<matrix.length;m++)
-            {
-                for (var k=0; k<matrix[m].length;k++)
-                {
-                    //alert(matrix[m][k]);                    
-                }
-                //exit;                
+             
             }
            
             var nr = matrix.length;
             w = (nr+2) * 50;
             
-            var columns = devicesIps;
-            var remapped = devicesIps.map(function(dat,i){
+            var columns = devicesIps;//["c1", "c2", "c3", "c4", "c5", "c6", "c7", "c8"];//devicesIps;
+            var remapped = columns.map(function(dat, i){//devicesIps.map(function(dat,i){
                 //["c1","c2"].map(function(dat,i){
                 return matrix.map(function(d,ii){
-                    return {x: ii, y: d[i+1] };
+                    return {x: ii, y: d[i+1], deviceIp: devicesIps[i] };
                 })
             });
+            
             //alert(remapped);
-
+                        
             var stacked = d3.layout.stack()(remapped);
             //alert(stacked);
             
-            var height = d3.max(stacked[stacked.length - 1], function(d) { return (d.y/5); });
+            //var height = d3.max(stacked[stacked.length - 1], function(d) { return (d.y/2);});//(d.y/5); });
             
-            // create canvas
+            // create the canvas
             var svg = d3.select("#viz").append("svg:svg")
             .attr("class", "chart")
             .attr("width", w)
-            .attr("height", height )
+            .attr("height", h)//height )
             .append("svg:g")
             .attr("transform", "translate(10,470)");
 
-            x = d3.scale.ordinal().rangeRoundBands([0, w-50])
-            y = d3.scale.linear().range([0, h-50])
-            z = d3.scale.ordinal().range(["darkblue", "blue", "lightblue", "gray", "darkgray"])
+            x = d3.scale.ordinal().rangeRoundBands([0, w-50]);
+            y = d3.scale.linear().range([0, h-50]);
+            //z = d3.scale.ordinal().range(["darkblue", "blue", "lightblue", "gray", "darkgray"])
+            z = d3.scale.category20c();
 
             console.log("RAW MATRIX---------------------------");
-	    // 4 columns: ID,c1,c2,c3
-            //columns: ID, deviceIp,hour,day,month,year,nbytes
-            /*var matrix = [
-                [1, "10.2.0.1, 12, 25, 4, 2012", 0, 2868],
-                [2, "10.2.0.17, 11, 12, 5, 2012", 0, 6171],
-                [3, "10.2.0.21, 14, 10, 6, 2012", 0, 8045],
-                [4, "10.2.0.3, 9, 4, 7, 2012", 0, 6907],
-                [5, "10.2.0.15, 15, 11, 7, 2012", 0, 5000]
-            ];*/
+	    // columns: month,device1,device2,device3 etc.
                     
             x.domain(stacked[0].map(function(d) {return d.x; }));
-            //alert(stacked[0]);
-            
-            //alert(h);
-            //y = d3.scale.linear().range([0, h-50]);
-            
-            y.domain([0, d3.max(stacked[stacked.length - 1], function(d) { return (d.y0+d.y)*3; })]);//nbytes
+            y.domain([0, d3.max(stacked[stacked.length - 1], function(d) { return (d.y0+d.y); })]);//*3//nbytes
             
             // Add a group for each column.
             var valgroup = svg.selectAll("g.valgroup")
@@ -171,12 +147,18 @@
             .attr("x", function(d) { return x(d.x); })
             .attr("y", function(d) { return -y(d.y0) - y(d.y); })
             .attr("height", function(d) { return y(d.y); })
-            .attr("width", x.rangeBand());
+            .attr("width", x.rangeBand())
+            .append("svg:title")
+                .text(function(d) { return devicesIps[d.y]; })//add the device name????
             
             rect.append("svg:text")
             .attr("x", function(d) { return x(d.x); })
             .attr("y", function(d) { return -y(d.y0) - y(d.y); })
-            .text("text...");
+            .text(function (d) {
+                var value = d.y/(1024*1024*1024);
+                value.toFixed(2);
+                return d.deviceIp + ": " + value.toFixed(2) + "Gb";
+            });
             
             //add text
            /* rect.append("text")
@@ -215,16 +197,16 @@
             // Add a caption to the graph.
             svg.append("svg:text")
             .attr("dy", ".35em")
-            .attr("x", x.rangeBand()/2)
+            .attr("x", 0)//x.rangeBand()/2)
             .attr("y", 20)
             .attr("text-anchor", "bottom")
-            .text(function(d) { return "Graph: Devices usage per days"; })
+            .text(function(d) { return "Monthly usage";})//"Graph: Devices usage per months"; })
             .style("font-size", "14px");
             
          }
 
          drawBarCharts("${dataMonthsDevices}");
-         ${deviceDataDays}
+         //${deviceDataDays}
         </script>
     <!--/body>
 </html-->

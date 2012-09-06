@@ -9,7 +9,9 @@
 
 <!--Selected device-->
 <h3><p id="deviceDataUsage"><a href="device.htm?ip=${deviceIp}">Device: ${deviceIp}</p></a></h3>  
-           
+            
+            <h3>Years considered: ${years}</h3>          
+
             <div id="deviceUsageMonth"/>
             
             <c:if test="${month!=null}">    
@@ -74,7 +76,8 @@
                 <script type="text/javascript">
                     //alert("${deviceIp}");
                     //alert("${deviceDataMonths}");
-                    drawHorizontalBarChart("Bars1", "#bar_chart_2 .chart", "${deviceIp}", "colorScale10", "${deviceIntMonths}", true, "${month}");//dataSet
+                    //chartID, selectString, deviceIp, colors, values, months, devicesAll, monthName
+                    drawHorizontalBarChart("Bars1", "#bar_chart_2 .chart", "${deviceIp}", "colorScale10", "${deviceIntMonths}", true, false, "${month}");//dataSet
                 </script>            
                 <br/>
             </c:if>

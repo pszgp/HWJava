@@ -4,7 +4,14 @@
     Author     : pszgp
 --%>
    <div id="users_content">
-            <h2>Current year: <y id="currentYear"></y></h2>
+
+       <style> 
+         body{
+             font: 12px Verdana, sans-serif;
+         }
+        </style>
+        
+            <!--h2>Current year: <y id="currentYear"></y></h2>
             <script language="javascript">
                 document.getElementById("currentYear").innerHTML = new Date().getFullYear();                
             </script>

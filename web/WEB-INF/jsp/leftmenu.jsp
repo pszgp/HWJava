@@ -65,6 +65,10 @@
             </p>
             <p id="devices_menu_details"></p>    
             <br/><br/><br/><br/><br/><br/><br/><br/><br/>
+            
+            <!-- 4 sept 2012: add the urls link in the menu -->
+            <h3><a href="urls.htm" class="menu_title" style="padding-left: 30pt;"><u>Urls</u></a></h3>
+            <br/><br/>
             <h3><p style="padding-left: 30pt;" onclick="window.location.reload()"><u>Reload</u></p></h3>
             
             

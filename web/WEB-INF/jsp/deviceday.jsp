@@ -30,6 +30,7 @@
             Third circle: months<br/>
             Fourth circle: days <br/>
             Fifth circle (external): hours <br/>
+                      
             
             <br/>
             <script type="text/javascript" src="js/d3/d3.v2.js"></script>
@@ -65,8 +66,8 @@
                 <!--/c:forEach>  
             <!--/c:forEach-->
             
-        <h3><a class="a_header" href="device.htm?ip=${deviceIp}&month=${month}">
-                Back to days view
+        <h3><a class="a_header" href="device.htm?ip=${deviceIp}"><!--&month=${month}"-->
+                Back to the total device usage <!-- of the device days view -->
             </a>
         </h3>
         <br/> 

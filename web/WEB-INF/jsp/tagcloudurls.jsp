@@ -80,8 +80,11 @@ var tc = TagCloud.create();
             url.occur = occur;
             
             //alert(url.name+" "+url.occur);
+            //
+            //4 sept 2012: use as url the urls.htm?url=name
+            url.href = "urls.htm?url="+url.name;
             
-            tc.add(url.name, url.occur, url.name, Date.parse('005/06/23 00:00:00'));
+            tc.add(url.name, url.occur, url.href, Date.parse('005/06/23 00:00:00'));
             
         }
      }

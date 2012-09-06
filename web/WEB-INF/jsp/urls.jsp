@@ -11,82 +11,70 @@
              
         <h3>Urls:</h3>             
         
-        <%@include file="tagcloudurls.jsp"%>
-        
-        <!--script>
-            
-        function setup(dataUrls) {
-
-            //pszgp: add the urls to the tag, then call the existing tagcloud function 
-            var tc = TagCloud.create();
-
-            if (dataUrls!=null)
-            {
-                var data = [];
-                if (dataUrls.indexOf("{")==0)
-                {
-                    dataUrls = dataUrls.substring(1, dataUrls.length-1); 
-                    data = dataUrls.split(", ");
-                }
-                for (var i=0;i<data.length;i++)
-                {
-                    var url = {};
-                    var name = data[i];
-                    var occur = data[i];
-
-                    name = name.substring(0, name.indexOf("="));
-
-                    occur = occur.substring(occur.indexOf("=")+1, occur.length);
-                    occur = +occur;
-
-                    url.name = name;
-                    url.occur = occur;
-                    
-                    //tc.add(url.name, url.occur*10, url.name, Date.parse('0000/00/00 00:00:00'));
-
-                }
-            }
-            //alert(data);
-            
+        <script type="text/javascript" src="js/tabber.js"></script>
+     <!-- tabs to view as table or graph; 28 aug. 2012
+     tabber.js from: http://www.barelyfitz.com/projects/tabber/example.html -->
+     <link rel="stylesheet" href="js/tabber/tabber.css" type="text/css" media="screen"/>
+     <link rel="stylesheet" href="js/tabber/tabber_print.css" type="text/css" media="print"/>
+     <style> 
+         .tabber{display: none;}
+         body{
+             font: 12px Verdana, sans-serif;
+         }
+     </style>
      
-            
-            //tc.loadEffector('CountSize').base(10).range(5);
-            //tc.loadEffector('DateTimeColor');
-
-            tc.setup('urlstagcloud');
-            alert(tc.toHTML());
-            var element = document.getElementById('urlstagcloudphph');
-            tc.setup('urlstagcloud');
-        }
-        //alert("${urlsOccur}");
-        setup("${urlsOccur}");
-        </script>
-        <!--div id="urlstagcloud"></div-->
-        
-        
-        <!--/script>
-<h1 onclick="setup();">TagCloud</h1>
-<div id="mytagcloud"></div!--> 
-        <!--%@include file="tagcloudurls.jsp" %--> 
-                
-        <h3>Urls occurences: </h3><br/>
-        <table>
-            <tr style="background-color: #64A0DE;""><th>Device</th><th>Visited website</th><th>Frequency</th></tr>
-            <c:set var="rowCount" value="0"/>
-            <c:forEach var="device" items="${urls}">
-                <c:set var="rowCount" value="${rowCount+1}"/>
-                <c:choose>
-                    <c:when test='${(rowCount)%2 eq 0}'><tr style="background-color: #64A0DE;"></c:when>
-                    <c:otherwise><tr style=""></c:otherwise>  
-                </c:choose>           
-                <c:forEach var="uri" items="${device.value}">
-                    <tr><td>${device.key}</td><td>${uri.key}</td><td>${uri.value}</td></tr>
-                </c:forEach>
-            </c:forEach>    
-        </table>
-        <br/>     
-        
-        
+     <c:choose>
+        <c:when test="${url eq null}">
+            <div class ="tabber">
+                <div class="tabbertab" title="Tagcloud">
+                    <%@include file="tagcloudurls.jsp"%>
+                </div>
+                <div class="tabbertab" title="Table view">
+                    <h3>Urls occurences: </h3><br/>
+                        <table style="width: 450px">
+                            <tr style="background-color: #64A0DE;""><th>Device</th><th style="width: 250px;">Visited website</th><th>Frequency</th></tr>
+                            <c:set var="rowCount" value="0"/>
+                            <c:forEach var="device" items="${urls}">
+                                <c:set var="rowCount" value="${rowCount+1}"/>
+                                <c:choose>
+                                    <c:when test='${(rowCount)%2 eq 0}'><tr style="background-color: #64A0DE;"></c:when>
+                                    <c:otherwise><tr style=""></c:otherwise>  
+                                </c:choose>           
+                                <c:forEach var="uri" items="${device.value}">
+                                    <tr><td>${device.key}</td><td style="width: 250px">${uri.key}</td><td>${uri.value}</td></tr>
+                                </c:forEach>
+                            </c:forEach>    
+                        </table>
+                        <br/>         
+                </div>                   
+            </div>   
+       
+        </c:when>
+        <c:otherwise> <div class="tabbertab" title="Graph view">      
+                    <script type="text/javascript" src="js/device_bars.js"> </script>
+                    <h3>Graph view of the selected url - horizontal stacked barchart:</h3>
+                        URL = ${url}
+                        <br/>
+                        ${urlsView}
+                        <br/>
+                        <table><tr><td height="40px;"></td></tr>
+                        <tr><td>
+                        <div class="div_RootBody" id="bar_chart_2">
+                            <div class="chart"></div>
+                        </div>
+                        <script type="text/javascript">
+                            //chartID, selectString, deviceIp, colors, values, months, devicesAll, monthName
+                            drawHorizontalBarChart("Bars1", "#bar_chart_2 .chart", "null", "colorScale10", "${urlsView}", false, false, "null");//dataSet
+                        </script> 
+                        </td>
+                    </tr>
+                </table>            
+                <br/>         
+            </div>
+            </c:otherwise>
+     </c:choose>
+     
+     
         </div>
                
     </body>

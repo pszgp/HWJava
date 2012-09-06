@@ -16,7 +16,9 @@
         <link rel="stylesheet" href="js/styles.css"/>
     
         <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %> 
-        <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>      
+        <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>  
+        
+        <%@ taglib prefix="sql" uri="http://java.sun.com/jsp/jstl/sql" %>
         
         <!--script type="text/javascript" 
 		src="http://mbostock.github.com/d3/d3.v2.js?2.9.1"></script-->
