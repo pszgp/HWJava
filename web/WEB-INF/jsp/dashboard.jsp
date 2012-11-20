@@ -44,7 +44,9 @@ the index of the dashboard application
                                         <td height="10px">${device.name}</td><td>${device.type}</td>
                                         <td><a href="device.htm?ip=${device.ip}">${device.ip}</a></td>
                                         <td><fmt:formatNumber maxFractionDigits="2" minFractionDigits="2"
-                                                            value="${device.nbytes/(1024*1024)}"/>Mb</td><!--${device.nbytesMb}-->
+                                                            value="${device.nbytes/(1024*1024)}"/>Mb<br/>
+                                            ${device.nbytes} bytes
+                                        </td><!--${device.nbytesMb}-->
                                                                         <!--value="${device.nbytes/(1024*1024)} = ${device.nbytesMonths}"/></td-->
                                             <td><fmt:formatNumber maxFractionDigits="2" minFractionDigits="2"
                                                                         value="${device.allowance/(1024*1024)}"/></td>
@@ -62,6 +64,9 @@ the index of the dashboard application
                             <div class="chart"></div>
                         </div>
                         <script type="text/javascript">
+                            //alert("${devicesTotal}");
+                            var dt = "${devicesTotal}";
+                            //alert(dt);
                             //chartID, selectString, deviceIp, colors, values, months, devicesAll, monthName
                             drawHorizontalBarChart("Bars1", "#bar_chart_1 .chart", "null", "colorScale10", "${devicesTotal}", false, true, "null");//dataSet
                         </script> 
@@ -85,8 +90,24 @@ the index of the dashboard application
                 <div id="chart"></div>
                 <script type="text/javascript" src="js/sunburstchart/sunburstd3.js"></script>
                 <script type="text/javascript">
-                    var file = "js/sunburstchart/devicesUsage.json";
+                    //var file = "js/sunburstchart/devicesUsage_homedashboard.json";
+                    //var file = "js/devicesUsage_hwdashboard.json";
+                    
+                    //place the file in www root of the tomcat server: webapps
+                    //(default location)
+                    var file = "js/devicesUsage_hwdashboard.json";//30oct2012
+                    
+                    //alert(file);
+                    ////"../../devicesUsage_hwdashboard.json";
+                    
+                    //alert(window.location.pathname);
+                    
+                    //alert(navigator.appName);
+                    //alert(file);
+                    //file = "js/sunburstchart/devicesUsageFlow.json";
+                    //var file = "devicesUsage.json";
                         //complete data: all devices, per years, months, days, hours
+                    //file = "js/sunburstchart/devicesUsage.json";
                     drawPartitionSunburst(file);
                 </script>
             

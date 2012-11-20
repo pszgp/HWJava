@@ -35,81 +35,13 @@ a.tagcloud-latest {
 }
 </style>
 <script type="text/javascript" src="js/lyokato-javascript-tagcloud-05ffc75/lib/tagcloud.js"></script>
+<script type="text/javascript" src="js/urlstagcloud.js"></script>
+<!--h1 onclick="setuptc(\"${urlsOccurZoomOne}\");">Tag cloud of urls</h1-->
+Tag cloud of urls
 <script type="text/javascript">
-<!--
-
-var tc = TagCloud.create();
-
-//function setup(urlsOccur) {
-  
-  //alert(urlsOccur);
-  
-    //pszgp: use an existing tagcloud function
-    //  to add the urls to the tag, then call the existing tagcloud function 
-    
-    var urlsOccur = "${urlsOccur}";
-    //alert(urlsOccur);
-    if (urlsOccur!=null)
-    {
-        var data = [];
-        if (urlsOccur.indexOf("{")==0)
-        {
-            urlsOccur = urlsOccur.substring(1, urlsOccur.length-1); 
-            data = urlsOccur.split(", ");
-        }
-        for (var i=0;i<data.length;i++)
-        {
-            //alert(data[i]);
-            var url = {};
-            var name = data[i];
-            var occur = data[i];
-            
-            name = name.substring(0, name.indexOf("="));
-            
-            occur = occur.substring(occur.indexOf("=")+1, occur.length);
-            //alert(data[i]);//+" AND " +occur);
-            occur = +occur;
-            if (occur > 1000)
-                occur/=10;
-            else if ((occur < 50) && (occur > 10))
-                occur *= 5;
-            else if (occur < 10)
-                occur *= 50;
-            
-            url.name = name;
-            url.occur = occur;
-            
-            //alert(url.name+" "+url.occur);
-            //
-            //4 sept 2012: use as url the urls.htm?url=name
-            url.href = "urls.htm?url="+url.name;
-            
-            tc.add(url.name, url.occur, url.href, Date.parse('005/06/23 00:00:00'));
-            
-        }
-     }
-    
-//}
-
-tc.loadEffector('CountSize').base(10).range(5);
-tc.loadEffector('DateTimeColor');
-
-    //tc.setup('mytagcloud');
-//}
-
-function setup ()
-{
-    tc.setup('mytagcloud');    
-}
-//-->
-</script>
-
-<h1 onclick="setup();">Tag cloud of urls</h1>
-
-</body>
-<script type="text/javascript">
-    //var urlsOccur = "${urlsOccur}";
-    //alert(urlsOccur);
     //setup("${urlsOccur}");//creates the tag cloud
+    var urlsOccur = "${urlsOccurZoomOne}";//"${urlsOccurView}";
+    //alert(urlsOccur);
+    setuptc(urlsOccur, 'tagcloud');
 </script>
 <div id="mytagcloud"></div>   

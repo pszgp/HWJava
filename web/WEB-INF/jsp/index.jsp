@@ -1,7 +1,5 @@
-<jsp:forward page="test.htm"></jsp:forward>
-
-<!--<%@page contentType="text/html" pageEncoding="UTF-8"%>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<!--DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
     "http://www.w3.org/TR/html4/loose.dtd">
 
 <html>
@@ -18,4 +16,6 @@
                 welcome page and also update the welcome-file setting in</i>
             <tt>web.xml</tt>.</p>
     </body>
-</html>-->
+</html-->
+
+<% response.sendRedirect("dashboard.htm"); %>

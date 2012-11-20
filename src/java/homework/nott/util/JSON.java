@@ -4,6 +4,7 @@
  */
 package homework.nott.util;
 
+import homework.nott.csv.CSVParser;
 import com.google.gson.Gson;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -25,10 +26,12 @@ public class JSON {
     public static void convertArraytoJSON(TreeMap data, String jsonFile)
     {
         String jsonText = convertArraytoJSON(data, 0);
+        String path = "";//webapps/homedashboard/js/sunburstchart/";
+            //"webapps/Homeworkdashboard/js/sunburstchart/";
         System.out.println("json text: "+jsonText);
         try{
-            System.out.println("current path: "+new File(".").getAbsolutePath());
-            BufferedWriter bw = new BufferedWriter(new FileWriter(jsonFile));
+            //System.out.println("current path: "+new File(".").getAbsolutePath());
+            BufferedWriter bw = new BufferedWriter(new FileWriter(path+jsonFile));
             bw.write(jsonText);
             bw.flush();
             bw.close();
@@ -111,44 +114,11 @@ public class JSON {
         for (int i=0; i < types.length; i++)
         {
             HashMap<String, Object> row = new HashMap();
-            //row.
-            
-            /*row.put("timestamp", "timestamp");
-            row.put("allowance", 10000);
-            data.add(row);*/
         }
-	String json = gson.toJson(data);//new String[]{"a", "b"}));
-         
-	/*try {
-		//write converted json data to a file named "file.json"
-		FileWriter writer = new FileWriter("devices.json");
-		writer.write(json);
-		writer.close();
- 
-	} catch (IOException e) {
-		e.printStackTrace();
-	}*/
+	String json = gson.toJson(data);//new String[]{"a", "b"}));         
  
 	System.out.println(json);
     }
     
-    public static void main(String[] args) {
-       JSON.convertMySQLResultToJSON(new String[]{"timestamp"}, new String[]{"@...@"}, "file");
-       
-       CSVParser csv = new CSVParser();
-       Set<String> devicesIps = csv.getDevicesIps();
-        TreeMap<String, TreeMap<Integer, TreeMap<Integer, TreeMap<Integer, TreeMap<Integer, Integer>>>>> devicesUsage = 
-                csv.getDevicesUsageHours(devicesIps);
-        TreeMap<String, TreeMap<Integer, TreeMap<Integer, TreeMap<Integer, Long>>>> dataDays = 
-                csv.getDevicesUsageDays(devicesUsage);
-        //System.out.println("csv hours: "+devicesUsage);
-        String json = JSON.convertArraytoJSON(devicesUsage, 0);
-        System.out.println("json text: "+json);
-        //System.out.println("csv days: "+dataDays);
-        json = JSON.convertArraytoJSON(dataDays, 0);
-        System.out.println("json text: "+json);
-        
-        
-        
-    }
+    
 }

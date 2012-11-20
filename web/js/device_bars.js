@@ -11,6 +11,11 @@
 var hwColour = "#64A0DE";
 
 function drawHorizontalBarChart(chartID, selectString, deviceIp, colors, values, months, devicesAll, monthName) {
+    
+    //alert(navigator.appName);
+    //var iebrowswer =  false;
+    //if (navigator.appName == 'Microsoft Internet Explorer')
+    //    iebrowser = true;//!!! svg not supported, use div-s intead!!!!!!!!!!!!
 //
 //alert("HERE");
 //boolean values: months, devicesAll (device.js, dashboard.js)
@@ -32,7 +37,7 @@ function drawHorizontalBarChart(chartID, selectString, deviceIp, colors, values,
     var MONTHS = [null, "JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE", "JULY", "AUGUST", "SEPTEMBER",
                     "OCTOBER", "NOVEMBER", "DECEMBER"];
     
-    //alert(monthName in MONTHS);
+    //alert((monthName in MONTHS) + " "+devicesAll+" "+months);
     if (monthName in MONTHS)
         months = false;
     
@@ -44,43 +49,11 @@ function drawHorizontalBarChart(chartID, selectString, deviceIp, colors, values,
         //alert(values);
     }
 
+    //alert(values);
+
     if (values==null)
         return;
-    /*d3.csv("data/HW/HWStatsUsageFlows_sql_.csv", function (data) {
-            values = data;
-    });*/
-    /*if (deviceIp!=null)
-        values = data.filter(function(d) {             
-            var date = d.ipdate;
-            date = date.substring(date.indexOf(" ")+1);
-            var deviceMonth = date.split("-")[1];
-            if (deviceMonth.indexOf("0")==0)
-                deviceMonth=deviceMonth.substring(1);
-            deviceMonth--;
-            //alert(deviceMonth+" "+monthId+" "+(deviceMonth==monthId));
-            //exit;
-            //if (d.ipaddr == deviceIp)
-            //    if (deviceMonth == monthId)
-            //        return true;
-            //return false;
-            return ((d.ipaddr == deviceIp) && (deviceMonth == monthId));
-        }); 
-        //alert(values);
-        /*values.forEach(function(d) {
-            var date = d.ipdate;
-            date = date.substring(date.indexOf(" ")+1);
-            var day = date.split("-")[2];
-            //to avoid null values set the non used values to default:
-            d.date = date; d.ipaddr = deviceIp; d.last = date;
-            //set the values used for the graph
-            d.ipdate = day + monthName;//parse(date);
-            d.bytes =+ d.bytes;
-            d.bytes = d.bytes/(1024*1024);
-            d.bytes = d.bytes.toFixed(2);
-            //set the link to details of the day... 
-            d.link = "deviceday.htm?ip="+deviceIp+"&month="+monthName+"&monthId="+monthId+"&day="+day;
-        });*/
-        var data = [];
+    var data = [];
         for (var i=0;i<values.length;i++)
         {
             var d = values[i];
@@ -96,13 +69,6 @@ function drawHorizontalBarChart(chartID, selectString, deviceIp, colors, values,
                 }
                 else
                     date = MONTHS[dateNr];                  
-                /*if (dateNr != null)
-                    date = dateNr;
-                else {
-                    date = date;//25 aug. 2012: use the name of the device for the dashboard page
-                    months = false; devicesAll = false;
-                }*/
-               
             }
             else 
                 date = date;//+" "+monthName;
@@ -128,40 +94,8 @@ function drawHorizontalBarChart(chartID, selectString, deviceIp, colors, values,
         }
         //alert(data);
 
-        /*var data=[1,2,3,4];
-        data.forEach(function(d){
-            data.date = 1;
-            data.bytes = 2;
-            alert(data.date+" "+data.bytes);
-            return data;
-        });*/
-        /*values.forEach(function(d){
-            //alert(d+" "+d.indexOf("="));
-            var date = d;
-            date = date.substring(0, date.indexOf("="));
-            var nbytes = d.substring(d.indexOf("=")+1, d.length);
-            nbytes = +nbytes;
-            //alert(d+" "+date+" and "+nbytes);
-            d.date = date;
-            d.nbytes = nbytes;  
-            var data={"date":date, "nbytes": nbytes};
-            data.date = data["date"];
-            data.nbytes = data["nbytes"];
-            alert(data.date+" "+d.nbytes);  
-            d.date = data.date;
-            d.nbytes = data.nbytes;
-            d = data;
-            return d;
-            //return data;
-            //alert(d.nbytes+" "+d.date);
-        });*/
-
-        //alert(values);
-
         values = data;
-        //alert(values);
-        //values.forEach(function(d){alert(d.date+" "+d.bytes);});
-
+    
         var canvasWidth = 700;//d3.max(values, function(d) { return d.bytes/10;});//700;
         var barsWidthTotal = 300;
         var barHeight = 15;//24;//20;//25 aug. 2012: increase the bars to align to the table of total usages
@@ -176,30 +110,71 @@ function drawHorizontalBarChart(chartID, selectString, deviceIp, colors, values,
         var y = d3.scale.linear().domain([0, values.length]).range([0, barsHeightTotal]);
 
         // Create the svg drawing canvas...
-        var canvas = d3.select(selectString)
-        .append("svg:svg")
+        var canvas;
+        
+        /*if (!iebrowser)
+        {
+            canvas = d3.select(selectString)
+            .append("div")
+            .attr("width", canvasWidth)
+            .attr("height", canvasHeight).style("background-color", "blue");
+            alert("Your browser IE does not support svg! " +
+                "Please use a different browser [Netscape, Chrome, Mozilla] "+
+                "or install support for Scalable Vector Graphics.");
+            return;
+        }*/
+        
+        if (navigator.appName == 'Microsoft Internet Explorer')
+        {
+            canvas = d3.select(selectString)
+                .append("div")
+                .attr("width", canvasWidth)
+                .attr("height", canvasHeight).style("background-color", "white");
+            
+            canvas.selectAll("rect")
+            .data(values)
+            .enter()
+                .append("div")
+                .attr("top", 0) // Right to left
+                .attr("left", function(d, i) { return y(i); })
+                .attr("height", barHeight)
+                .style("foreground-color", "black" )
+                //.style("stroke", "black" ) 
+                .attr("width", function(d) { if ((d.bytes/10)<1) return 1; else return x(d.bytes/10); })
+                .style("background-color", function(d, i) { colorVal = hwColour; return colorVal; } )
+                //.attr("index_value", function(d, i) { return "index-" + i; })
+                .attr("class", function(d, i) { return "bars-" + chartID + "-bar-index-" + i; })
+                //.attr("color_value", function(d, i) { return hwColour; }) 
+                //.style("stroke", "black");              
+                
+            return;
+        }
+        
+        canvas = d3.select(selectString)
+            .append("svg:svg")
             .attr("width", canvasWidth)
             .attr("height", canvasHeight).style("background-color", "white");
-
-        // Draw individual hyper text enabled bars...
-        canvas.selectAll("rect")
-        .data(values)
-        .enter()
-            .append("svg:rect")
-            .attr("x", 0) // Right to left
-            .attr("y", function(d, i) { return y(i); })
-            .attr("height", barHeight)
-            .style("fill", "black" )
-            .style("stroke", "black" ) 
-            .attr("width", function(d) { if ((d.bytes/10)<1) return 1; else return x(d.bytes/10); })
-            .style("fill", function(d, i) { colorVal = hwColour; return colorVal; } )
-            .attr("index_value", function(d, i) { return "index-" + i; })
-            .attr("class", function(d, i) { return "bars-" + chartID + "-bar-index-" + i; })
-            .attr("color_value", function(d, i) { return hwColour; }) 
-            .style("stroke", "black");            
-
+              
+       // Draw individual hyper text enabled bars...
+       canvas.selectAll("rect")
+            .data(values)
+            .enter()
+                .append("svg:rect")
+                .attr("x", 0) // Right to left
+                .attr("y", function(d, i) { return y(i); })
+                .attr("height", barHeight)
+                .style("fill", "black" )
+                .style("stroke", "black" ) 
+                .attr("width", function(d) { if ((d.bytes/10)<1) return 1; else return x(d.bytes/10); })
+                .style("fill", function(d, i) { colorVal = hwColour; return colorVal; } )
+                .attr("index_value", function(d, i) { return "index-" + i; })
+                .attr("class", function(d, i) { return "bars-" + chartID + "-bar-index-" + i; })
+                .attr("color_value", function(d, i) { return hwColour; }) 
+                .style("stroke", "black");                
+                   
+        var noUrl = (devicesAll in MONTHS);
         // Create text values that go at end of each bar...
-        if (months)
+        if ((!noUrl) && months)
         {
             canvas.selectAll("text")
             .data(values) // Bind dataSet to text elements
@@ -218,12 +193,12 @@ function drawHorizontalBarChart(chartID, selectString, deviceIp, colors, values,
             //.append("svg:a")
            // .attr("xlink:href", function(d) { return "device.htm?ip="+deviceIp+"&month="+d.date; });
         }
-        else if (devicesAll)
+        else if ((!noUrl) && devicesAll)
         {
             canvas.selectAll("text")
             .data(values) // Bind dataSet to text elements
             .enter()
-            .append("svg:a").attr("xlink:href", function(d) { return "device.htm?ip="+d.date; })
+            .append("svg:a").attr("xlink:href", function(d) { return "device.htm?ip="+deviceIp;})//d.date; })
             .append("svg:text") // Append text elements
                 .attr("x", x)
                 .attr("y", function(d, i) { return y(i); })
