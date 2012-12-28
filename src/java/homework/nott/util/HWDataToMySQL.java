@@ -2,11 +2,8 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package homework.nott.mysql;
+package homework.nott.util;
 
-import homework.nott.csv.CSVParser;
-import homework.nott.device.DeviceIP;
-import homework.nott.mysql.sums.HWMySQLEngine;
 import java.io.*;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -23,7 +20,7 @@ public class HWDataToMySQL {
     
     private static final int MAX_RECORDS_SIZE = 1000;
 
-    public enum TABLES {
+    enum TABLES {
         //private String[] fields;
         Allowances (new String[]{"", ""}),// {public void setFields(String[] f) {fields = new String[]{""}};},
         Bwstats (),
@@ -31,7 +28,7 @@ public class HWDataToMySQL {
         //@1252c94e41d07060@<|>17<|>169.254.107.207<|>53293<|>255.255.255.255<|>2223<|>1<|>114<|>
         Flows(new String[]{"last", "proto", "daddr", "dport", "saddr", "sport", "npkts", "nbytes"}),
         
-        KFlows(new String[]{"last", "timestamp", "proto", "daddr", "dport", "saddr", "sport", "npkts", "nbytes", "flag"}), 
+        KFlows(new String[]{"last", "timestamp", "proto", "daddr", "dport", "saddr", "sport", "npkts", "nbytes"}), 
         
         //@1252e0caa6eb6d18@<|>c8:bc:c8:c5:31:52<|>-55.352941<|>0<|>18<|>9325<|>
         Links(new String[]{"last", "macaddr", "rssi", "npkts", "nretries", "nbytes"}),
@@ -49,14 +46,15 @@ public class HWDataToMySQL {
         UsersEvents(null);
         
         String[] fields;
-        
-        public String[] getFields(){return fields;};//12 sept 2012 (to access from outside package)
-        
         TABLES(){}        
         TABLES(String[] fields)
         {
             this.fields = fields;
-        }         
+        }        
+        public String[] getFields()
+        {
+            return fields;
+        }        
     }
     
     
@@ -237,18 +235,13 @@ public class HWDataToMySQL {
     
     //20-21 august 2012
     //read flows from the flows csv file (data imported from hw in the format <|>field_value<|>)
-    //17 sept 2012: read from mysql
-    public TreeMap<String,TreeMap<Integer, TreeMap<Integer, TreeMap<Integer, TreeMap<Integer, Long>>>>> getCSVFlowsDeviceSumHours(String flowName){
+    /*public TreeMap<Integer,TreeMap<Integer, TreeMap<Integer, TreeMap<Integer, Long>>>> getFlowsDeviceSumHours(String deviceIp) {
         
-        String query = "SELECT * FROM "+ flowName;
-        ArrayList<TreeMap<String, Object>> ipFlows = HWMySQLEngine.getInstance().queryMySQL(query, null);
+        ArrayList<TreeMap<String, Object>> ipFlows = 
+                new ArrayList();//new CSVParser().getRecords("Flows");
         
-        if (ipFlows.size() == 0)
-            return new TreeMap();
-        
-        System.out.println("KFlows data: " + ipFlows.size()+" "+ipFlows.get(0));
-        
-        TreeMap<String, TreeMap<Integer, TreeMap<Integer, TreeMap<Integer, TreeMap<Integer, Long>>>>> ipUsage = new TreeMap();
+        TreeMap<Integer, TreeMap<Integer, TreeMap<Integer, TreeMap<Integer, Long>>>> ipUsage = 
+                new TreeMap();
         
         if (ipFlows!=null)
         {    for (TreeMap<String, Object> flow: ipFlows)
@@ -257,31 +250,8 @@ public class HWDataToMySQL {
                 {
                     if ((flow.containsKey("nbytes")&&(flow.containsKey("last"))))
                     {
-                        
-                        //add also the device ip (validate it, take the ip of the device, not of the visited website)
-                        String deviceIp = (String)flow.get("daddr");
-                        if (!DeviceIP.isValidDeviceIp(deviceIp))
-                            deviceIp = (String)flow.get("saddr");
-                        if (!DeviceIP.isValidDeviceIp(deviceIp))
-                            continue;
-                            
-                        TreeMap<Integer, TreeMap<Integer, TreeMap<Integer, TreeMap<Integer, Long>>>> ipUsageDevice = new TreeMap();
-                        
-                        if (ipUsage.containsKey(deviceIp))
-                            ipUsageDevice = ipUsage.get(deviceIp);
-                        
-                        String fieldNBytes = (String)flow.get("nbytes");
-                        long nbytes = 0L;
-                        try{
-                            nbytes = (long)Integer.parseInt(fieldNBytes);
-                        }catch(Exception e){
-                            //e.printStackTrace();
-                            System.out.println(flow);
-                            System.out.println(flow.get("nbytes"));//!!!nbytes (the field, not its value, skip the record)
-                            System.out.println("nbytes = "+fieldNBytes);
-                            System.out.println("deviceIp = " + deviceIp);
-                            break;
-                        }
+                        int value = (Integer)flow.get("nbytes");
+                        long nbytes = value;
                         String last = (String)flow.get("last");
                         
                         Timestamp tstamp = HWTimestamp.getTimestampFromUnixString(last);
@@ -298,8 +268,8 @@ public class HWDataToMySQL {
                         int year = 1900+tstamp.getYear();                       
                         
                         TreeMap<Integer, TreeMap<Integer, TreeMap<Integer, Long>>> ipUsageYear = new TreeMap();
-                        if (ipUsageDevice.containsKey(year))
-                            ipUsageYear = ipUsageDevice.get(year);     
+                        if (ipUsage.containsKey(year))
+                            ipUsageYear = ipUsage.get(year);     
                         
                         TreeMap<Integer, TreeMap<Integer, Long>> ipUsageMonth = new TreeMap();                        
                         if (ipUsageYear.containsKey(month))
@@ -312,62 +282,20 @@ public class HWDataToMySQL {
                         
                         Long ipUsageHour = 0L;
                         if (ipUsageDay.containsKey(hour))
-                        {
                             ipUsageHour = ipUsageDay.get(hour);
-                            System.out.println(ipUsageHour);
-                            System.exit(0);
-                        }
                         
                         ipUsageHour += nbytes;
                         
                         ipUsageDay.put(hour, ipUsageHour);
                         ipUsageMonth.put(day, ipUsageDay);
                         ipUsageYear.put(month, ipUsageMonth);
-                        ipUsageDevice.put(year, ipUsageYear);
-                        
-                        ipUsage.put(deviceIp, ipUsageDevice);
+                        ipUsage.put(year, ipUsageYear);
                         
                     }
                 }
             }
         }
-        System.out.println("recordsFlowsSums: "+ ipUsage);
-                
         return ipUsage;
-    }
-    /*public void saveCSVFlowsSums(String path, TreeMap<String, TreeMap<Integer, TreeMap<Integer, TreeMap<Integer, TreeMap<Integer, Long>>>>> ipUsage)
-    {
-        try{
-            String file = path + MySQLAccessData.fileSums;//"flows_sums_hw.csv";
-            System.out.println("Save flows sums in file: " + new File(file).getAbsolutePath());
-            BufferedWriter bw = new BufferedWriter(new FileWriter(file, false));
-            bw.write("deviceIp,year,month,day,hour,nbytes");
-            bw.newLine();
-            for (String deviceIp: ipUsage.keySet())
-            {
-                //System.out.print(deviceIp+",");
-                for (Integer year: ipUsage.get(deviceIp).keySet())
-                {
-                    //System.out.print(year+",");
-                    for (Integer month: ipUsage.get(deviceIp).get(year).keySet())
-                    {
-                        for (Integer day: ipUsage.get(deviceIp).get(year).get(month).keySet())
-                        {
-                            for (Integer hour: ipUsage.get(deviceIp).get(year).get(month).get(day).keySet())
-                            {
-                                Long nbytes = ipUsage.get(deviceIp).get(year).get(month).get(day).get(hour);
-                                System.out.println(deviceIp+","+year+","+month+","+day+","+hour+","+nbytes);
-                                bw.write(deviceIp+","+year+","+month+","+day+","+hour+","+nbytes);
-                                bw.newLine();
-                            }
-                        }
-                    }
-                }
-            }
-            bw.flush();
-            bw.close();
-        }
-        catch(IOException e){e.printStackTrace();};
     }*/
     /**
      * @param args the command line arguments
@@ -375,10 +303,5 @@ public class HWDataToMySQL {
     public static void main(String[] args) {
         // TODO code application logic here
         //new HWDataToMySQL().importDataCollection("D:/hwJavaSocket/London_data_txl/hwdatalondonv2 (1).tar/hwdata");
-        
-        TreeMap<String, TreeMap<Integer, TreeMap<Integer, TreeMap<Integer, TreeMap<Integer, Long>>>>> ipUsage 
-                = new HWDataToMySQL().getCSVFlowsDeviceSumHours("KFlows");
-        
-        //new HWDataToMySQL().saveCSVFlowsSums("data/London/", ipUsage);
     }
 }

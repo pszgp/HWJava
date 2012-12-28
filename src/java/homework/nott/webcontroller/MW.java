@@ -39,7 +39,7 @@ public class MW {
         return years;
     }*/
     
-    public enum MONTHS{NULL, JANUARY, FEBRUARY, MARCH, APRIL, MAY, JUNE, JULY, AUGUST, SEPTEMBER, OCTOBER, NOVEMBER, DECECMBER;
+    public enum MONTHS{NULL, JANUARY, FEBRUARY, MARCH, APRIL, MAY, JUNE, JULY, AUGUST, SEPTEMBER, OCTOBER, NOVEMBER, DECEMBER;
    
         public static MONTHS get(int i){
             return values()[i];

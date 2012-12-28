@@ -34,7 +34,30 @@ public class HWMySQLEngine {
     private HWMySQLEngine(){
        try {                       
             //initialize the connection to the mysql database
-            connMySQL = HWMySQL.getInstance().connectMySQL();                
+            connMySQL = HWMySQL.getInstance().connectMySQL();     
+            
+            //22 nov 2012: as per tom lodge suggested - use views instead of files
+            
+            //create a function to get the sql timestamp from the field "t"
+            //first, check if it exists already
+            ArrayList fctExists = queryMySQL("select specific_name from information_schema.ROUTINES where specific_name=\"summary_tstmp\"");
+            if (fctExists.size()==0)
+                queryMySQL("create function summary_tstmp(t varchar(128)) return timestamp "
+                    +" return from_unixtimestamp(conv(substring(t, 2, length(t)), 16, 10) div 1000000000)");
+            
+            /*
+             * queryMySQL("drop view if exists view_devices and view_summary_hours");
+            
+            //view 1: the ip addresses of devices
+            queryMySQL("create view view_devices as (select ipaddr from Leases where action=\"add\")");
+            
+            //view 2: summary of nbytes per hours per devices
+            queryMySQL("create view view_summary_hours as(select ipaddr, year(summary_tstmp(t)) as y, "
+                    + "month(summary_tstmp(t)) as m, day(summary_tstmp(t)) as d, hour(summary_tstmp(t)) as h "
+                    + "from KFlows, view_devices where (saddr=ipaddr or daddr=ipaddr) "
+                    + "group by ipaddr, y, m, d, h");
+                    * */
+            
        } catch (Exception ex) {
             Logger.getLogger(HwdbEngine.class.getName()).log(Level.SEVERE, null, ex);
        }          
@@ -131,7 +154,8 @@ public class HWMySQLEngine {
     public TreeMap<Integer, TreeMap<Integer, TreeMap<Integer, Long>>> retrieveMontlyUsagePerDeviceMySQL(String deviceIp)
     {        
         try{
-            String queryLeases = "select * from Leases where ipaddr=?";//\""+deviceIp+"\" ";
+            String queryLeases = "select * from view_devices";//5 dec 2012: read from the view
+                //Leases where ipaddr=?";//\""+deviceIp+"\" ";
             Object[] pars = new String[]{deviceIp};
             ArrayList<TreeMap<String, Object>> macaddrMap = queryMySQL(deviceIp, pars);                  
             System.out.println(macaddrMap);            

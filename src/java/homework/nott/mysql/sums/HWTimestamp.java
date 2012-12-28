@@ -38,6 +38,11 @@ public class HWTimestamp {
     //test
     public static void main(String[] args){
         
+        long lv = Long.parseLong("1288cb3a7ad51e28", 16)/1000000;
+        System.out.println(Long.parseLong("1288cb3a7ad51e28", 16)/1000000);
+        System.out.println(new Date(lv));
+        System.out.println(HWTimestamp.getTimestampFromUnixString("@1288cb3a7ad51e28@"));
+        System.exit(0);
         System.out.println(HWTimestamp.getTimestampFromUnixString("@12883089a08c8eb8@"));
         System.exit(0);
         System.out.println(new String("2012-04-25").split("-")[0]);

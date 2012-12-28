@@ -8,6 +8,7 @@ package homework.nott.webcontroller;
  *
  * @author pszgp, 10 may 2012
  */
+import homework.nott.csv.CSVParserStaticData;
 import homework.nott.device.DateDeviceUsage;
 import homework.nott.mysql.MySQLAccessData;
 import homework.nott.mysql.sums.HWMySQLSums;
@@ -22,10 +23,10 @@ import org.springframework.stereotype.Controller;
 @Controller
 public class DeviceController {
  
-    @RequestMapping("/device")      
+    @RequestMapping("/livedevice")      
     public ModelAndView device(HttpServletRequest request, HttpServletResponse response) { 
                
-        ModelAndView mv = new MW().getModelView(request, response, "device");     
+        ModelAndView mv = new MW().getModelView(request, response, "livedevice");     
         
         MySQLAccessData mysql = new MySQLAccessData();
         
@@ -50,6 +51,83 @@ public class DeviceController {
             
             TreeMap<String, TreeMap<Integer, TreeMap<Integer, Long>>> data = 
                 mysql.getDevicesUsageMonths(devicesUsage);
+            
+            //year = 2011;//London data!!!!!!!!!! (25 aug. 2012)
+            
+            if (data.containsKey(deviceIp))
+            {
+                deviceDataMonths = data.get(deviceIp).get(year);
+            }
+            
+            System.out.println("HERE1: " + data);
+            System.out.println("HERE2: " + deviceDataMonths);
+            
+            ArrayList<DateDeviceUsage> deviceUsage = getDateDeviceUsage(deviceDataMonths, true);
+            System.out.println("deviceDataMonths: " + deviceUsage);
+            mv.addObject("deviceDataMonths", deviceUsage);
+            mv.addObject("deviceIntMonths", deviceDataMonths);
+            String month = (String)request.getParameter("month");
+            Object monthId = null;
+            if (month!=null)
+            {
+                System.out.println("month: " + month);
+                month = month.trim();
+                MW.MONTHS m = MW.MONTHS.valueOf(month);
+                monthId = MW.MONTHS.getIndexOf(m);              
+            }
+            else
+            {                
+                monthId = new Date(System.currentTimeMillis()).getMonth()+1;
+            }
+            int monthIdInt = (Integer)monthId;
+            System.out.println("month id: " + monthId+" year id: "+year); 
+            System.out.println(year+" "+yearId);
+            //deviceDataDays = dataDays.get(deviceIp).get(yearId).get(monthIdInt);
+            try{
+                deviceDataDays = dataDays.get(deviceIp).get(year).get(monthIdInt);
+            }catch(NullPointerException e){}
+            
+            mv.addObject("deviceDataDays", deviceDataDays);//this.getDateDeviceUsage(deviceDataDays, false));
+                               
+            request.setAttribute("month", month);
+            request.setAttribute("deviceIp", deviceIp);
+        }
+                
+        return mv;
+    }
+    
+    //read from local data
+    @RequestMapping("/device")      
+    public ModelAndView deviceLocal(HttpServletRequest request, HttpServletResponse response) { 
+               
+        ModelAndView mv = new MW().getModelView(request, response, "device");     
+        
+        //MySQLAccessData mysql = new MySQLAccessData();
+        
+        String deviceIp = (String)request.getParameter("ip").trim();
+        TreeMap<Integer, Long> deviceDataMonths=new TreeMap();
+        TreeMap<Integer, Long> deviceDataDays = new TreeMap(); 
+         
+        CSVParserStaticData csv = new CSVParserStaticData();
+         
+        Set<String> devicesIps = csv.getDevicesIps();
+        TreeMap<String, TreeMap<Integer, TreeMap<Integer, TreeMap<Integer, TreeMap<Integer, Integer>>>>> 
+                devicesUsage = csv.getDevicesUsageHours(devicesIps);
+        TreeMap<String, TreeMap<Integer, TreeMap<Integer, TreeMap<Integer, Long>>>> dataDays = 
+                csv.getDevicesUsageDays(devicesUsage);
+        
+        if (deviceIp!=null)
+        {
+            System.out.println("device ip: " + deviceIp);
+            deviceIp = deviceIp.trim();
+            
+            Object year = request.getParameter("year");
+            if (year==null)
+                year = new Date(System.currentTimeMillis()).getYear()+1900;
+            int yearId = (Integer)year;
+            
+            TreeMap<String, TreeMap<Integer, TreeMap<Integer, Long>>> data = 
+                csv.getDevicesUsageMonths(devicesUsage);
             
             //year = 2011;//London data!!!!!!!!!! (25 aug. 2012)
             

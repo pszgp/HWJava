@@ -88,94 +88,82 @@ public class MySQLAccessData {
     }*/
     
     //Read the deviceUsage from the CSV file
-    public static final String fileSums = "flows_sums_hours_hw_.csv";
-            //"/webapps/hwdashboard/js/flows_sums_hours.csv";
-        //"/webapps/homedashboard/js/flows_sums_hw.csv";
+    //public static final String fileSums = "flows_sums_hours_hw_.csv";
+    
+    //5 dec, rewrite the function to read directly from the mysql view instead of a local file
     public TreeMap<String, TreeMap<Integer, TreeMap<Integer, TreeMap<Integer, TreeMap<Integer, Long>>>>> getDevicesUsageHours(Set<String> devicesIps)
     {
         TreeMap<String, TreeMap<Integer, TreeMap<Integer, TreeMap<Integer, TreeMap<Integer, Long>>>>> devicesUsage = new TreeMap();
         
         BufferedReader br;
         try {
-            System.out.println("Read devices usage from csv file: " + new File(fileSums).getAbsolutePath());
-            br = new BufferedReader(new FileReader(fileSums));
-            
-            String line = null;
-            int countLine = 0;
-            while ((line=br.readLine())!=null)
-            {
-                countLine++;
-                if (countLine==1) continue;
-                
-                if (line.contains("\""))
-                        line = line.replaceAll("\"", "");//28 aug 2012
-                line = line.trim();
-                
-                //System.out.println(line);
+           ArrayList<TreeMap<String,Object>> records = HWMySQLEngine.getInstance().queryMySQL("select * from view_summary_hours", null);
+           
+           for (TreeMap<String,Object> record: records)
+           {
+               //fields are: ipaddr, y (year), m (month), d (day), h (hour), sum(nbytes) (for data usage)
+               String deviceIp = (String)record.get("ipaddr");
+               int year = (Integer)record.get("y");
+               if (year==0)
+                   continue;//skip the empty records
+               Integer month = (Integer)record.get("m");
+               Integer day = (Integer)record.get("d");
+               Integer hour = (Integer)record.get("h");
+               Long nbytes = (Long)record.get("sum(nbytes)");
+               
+               System.out.println("record: "+record);
+               System.out.println("year="+year+",month="+month+",day="+day+",hour="+hour+",nbytes="+nbytes);
+               
+               TreeMap<Integer, TreeMap<Integer, TreeMap<Integer, TreeMap<Integer, Long>>>> device = new TreeMap();
                     
-                String[] items = line.split(",");
-                //The fields are: deviceIp,year,month,day,hour,nbytes
-                if (items.length == 6)
+                if (devicesUsage.containsKey(deviceIp))
+                    device = devicesUsage.get(deviceIp);
+
+                TreeMap<Integer, TreeMap<Integer, TreeMap<Integer, Long>>> deviceYear = new TreeMap();
+
+                if (device.containsKey(year))
                 {
-                    String deviceIp = items[0];
-                    if (deviceIp == null) continue;
-                    //if (deviceIp.startsWith("\""))
-                    //    deviceIp = deviceIp.substring(1);
-                    
-                    //System.out.println(deviceIp);
-                    //System.out.println(devicesIps + " " + (devicesIps.contains(deviceIp)));
-                    //System.exit(0);
-                    if (!devicesIps.contains(deviceIp))
-                        continue;//ignore ips from devices outside the network
-                    
-                    int year = Integer.parseInt(items[1]);
-                    int month = Integer.parseInt(items[2]);
-                    int day = Integer.parseInt(items[3]);
-                    int hour = Integer.parseInt(items[4]);
-                    long nbytes = Long.parseLong(items[5]);
-                    
-                    TreeMap<Integer, TreeMap<Integer, TreeMap<Integer, TreeMap<Integer, Long>>>> device = new TreeMap();
-                    
-                    if (devicesUsage.containsKey(deviceIp))
-                        device = devicesUsage.get(deviceIp);
-                    
-                    TreeMap<Integer, TreeMap<Integer, TreeMap<Integer, Long>>> deviceYear = new TreeMap();
-                    
-                    if (device.containsKey(year))
-                        deviceYear = device.get(year);
-                    
-                    TreeMap<Integer, TreeMap<Integer, Long>> deviceMonth = new TreeMap();
-                    
-                    if (deviceYear.containsKey(month))
-                        deviceMonth = deviceYear.get(month);
-                    
-                    TreeMap<Integer, Long> deviceDay = new TreeMap();
-                    
-                    if (deviceMonth.containsKey(day))
-                        deviceDay = deviceMonth.get(day);
-                    
-                    deviceDay.put(hour, nbytes);
-                    
-                    deviceMonth.put(day, deviceDay);
-                    
-                    deviceYear.put(month, deviceMonth);
-                    
-                    device.put(year, deviceYear);
-                    
-                    devicesUsage.put(deviceIp, device);
-                    
-                    //System.out.println("fileSums - line: " + line);
-                
+                    if (device.get(year)!=null)
+                            deviceYear = device.get(year);
                 }
+
+                TreeMap<Integer, TreeMap<Integer, Long>> deviceMonth = new TreeMap();
+
+                System.out.println("deviceYear="+deviceYear);
+                if (deviceYear.containsKey(month))
+                {
+                    if (deviceYear.get(month)!=null)
+                            deviceMonth = deviceYear.get(month);
+                }
+                System.out.println("deviceMonth="+deviceMonth);
+                
+                TreeMap<Integer, Long> deviceDay = new TreeMap();
+
+                if (deviceMonth.containsKey(day))
+                {
+                    if (deviceMonth.get(day)!=null)
+                        deviceDay = deviceMonth.get(day);
+                }
+                System.out.println("deviceDay="+deviceDay);
+
+                deviceDay.put(hour, nbytes);
+                
+                deviceMonth.put(day, deviceDay);
+
+                deviceYear.put(month, deviceMonth);
+
+                device.put(year, deviceYear);
+
+                devicesUsage.put(deviceIp, device);
+
+                System.out.println("fileSums - record: " + record);
             }
-            
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(homework.nott.csv.CSVParser.class.getName()).log(Level.SEVERE, null, ex);
-            ex.printStackTrace();
-        } catch (IOException ex) {
-            Logger.getLogger(homework.nott.csv.CSVParser.class.getName()).log(Level.SEVERE, null, ex);
-            ex.printStackTrace();
         }
+        catch(Exception e){
+            System.out.println("ERROR: Cannot read the devices data from the query!");
+            e.printStackTrace();
+        }
+            
         
         System.out.println("Devices usage per hours: "+devicesUsage);
         return devicesUsage;

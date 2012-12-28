@@ -4,12 +4,17 @@
  */
 package homework.nott.webcontroller;
 
+import homework.nott.csv.CSVParser;
+import homework.nott.csv.CSVParserStaticData;
 import homework.nott.util.Device;
 import homework.nott.csv.DevicesDetailsCSV;
+import homework.nott.device.DateDeviceUsage;
+import homework.nott.mysql.HWDataToMySQL;
 import homework.nott.mysql.MySQLAccessData;
 import homework.nott.mysql.sums.HWMySQLEngine;
 import homework.nott.mysql.sums.HWMySQLSums;
 import homework.nott.util.JSON;
+import homework.nott.webcontroller.MW.MONTHS;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -38,18 +43,23 @@ public class DashboardController {// implements Runnable {
    */
     MySQLAccessData mysql = new MySQLAccessData();
         
-    @RequestMapping("/dashboard")      
-    public ModelAndView dashboard(HttpServletRequest request, HttpServletResponse response) {        
-        ModelAndView mv = new MW().getModelView(request, response, "dashboard");
+    /*======================= live data ===========================*/
+    @RequestMapping("/live")      
+    public ModelAndView live(HttpServletRequest request, HttpServletResponse response) {        
+        ModelAndView mv = new MW().getModelView(request, response, "live");
         
         //17 sept 2012: moved from MW.java, and replaced CSVParser calls with MySQLAccessData
         
         Set<String> devicesIps = (Set<String>) new HWMySQLSums().getIpsFromLeases();
         
-        //Create the filesums file
+        /*5 dec 2012: modify the getDevicesUsageHours to read from the view instead of the file
+          don't create the filesums file*/
+        
+        /*//Create the filesums file
         new HWMySQLSums().saveFLowsDevicesSums(devicesIps, MySQLAccessData.fileSums);//"flows_sums_hw.csv");      
-               
         //read from the filesums file
+        */
+        
         TreeMap<String, TreeMap<Integer, TreeMap<Integer, TreeMap<Integer, TreeMap<Integer, Long>>>>> 
                 devicesUsage = mysql.getDevicesUsageHours(devicesIps);
         
@@ -57,7 +67,7 @@ public class DashboardController {// implements Runnable {
                 mysql.getDevicesUsageMonths(devicesUsage);
         TreeMap<String, Long> devicesTotal = mysql.getTotalUsageDevices(devicesUsage);
         
-        ArrayList<Device> devices = new DevicesDetailsCSV().getDevices(devicesIps);
+        ArrayList<Device> devices = new DevicesDetailsCSV().getDevicesLive(devicesIps);
         
         Set<Integer> years = getYearsOfData(data);                
         
@@ -68,16 +78,8 @@ public class DashboardController {// implements Runnable {
         mv.addObject("years", years);//27 aug 2012, add the years of data
         
         TreeMap<String, TreeMap<String, Long>> dataMonthsDevices = DeviceController.getDataMonthsDevices(data);//for each month the devices data, not for each device
-        mv.addObject("dataMonthsDevices", dataMonthsDevices);//dashboard
-                //31 july 2012: save the json file for the devices usage     
-        
-        String fileDevicesUsage = "webapps/hwdashboard/js/devicesUsage_hwdashboard.json"; 
-                            //"/webapps/devicesUsage_hwdashboard.json";
-        File f = new File(fileDevicesUsage);
-        System.out.println("fileDevicesUsage = " + f.getAbsolutePath()+" "+f.exists()+
-                                new File(".").getAbsolutePath());
-        JSON.convertArraytoJSON(devicesUsage, fileDevicesUsage);
-                //"devicesUsage_hwdashboard.json");//"devicesUsageFlow.json");//to copy then in js/sunburstchart/        
+        mv.addObject("dataMonthsDevices", dataMonthsDevices);//dashboard      
+        mv.addObject("dataJson", JSON.convertArraytoJSON(devicesUsage, null));//fileDevicesUsage);
         
         return mv;
     }
@@ -94,5 +96,99 @@ public class DashboardController {// implements Runnable {
         }
         return years;
     }
+ 
+    /*===================== local data ================================*/
     
+    CSVParserStaticData csv = new CSVParserStaticData();
+    @RequestMapping("/dashboard")      
+    public ModelAndView dashboard(HttpServletRequest request, HttpServletResponse response) { 
+       
+        ModelAndView mv = new MW().getModelView(request, response, "dashboard");
+        HttpSession session = request.getSession();
+        //session.setMaxInactiveInterval(MAX_SESSION_INTERVAL);
+         mv.setViewName("dashboard");
+        
+         //here mention the location of the data on the server or on local computer, such as in the sample below
+        new HWDataToMySQL().importDataCollection("D:/hwJavaSocket/London_data_txl/hwdatalondonv2 (1).tar/hwdata");
+         
+        Set<String> devicesIps = csv.getDevicesIps();
+        TreeMap<String, TreeMap<Integer, TreeMap<Integer, TreeMap<Integer, TreeMap<Integer, Integer>>>>> 
+                devicesUsage = csv.getDevicesUsageHours(devicesIps);
+        TreeMap<String, TreeMap<Integer, TreeMap<Integer, Long>>> data = 
+                csv.getDevicesUsageMonths(devicesUsage);
+        System.out.println("MW: data="+data);
+        System.out.println("MW: devicesIps = " + devicesIps);
+        System.out.println("MW: devicesUsage = " + devicesUsage);
+        TreeMap<String, Long> devicesTotal = csv.getTotalUsageDevices(devicesUsage);
+        /*ArrayList<Device> devices = new DevicesDetailsCSV().getDevices();
+        
+        Set<Integer> years = getYearsOfData(data);
+                
+        System.out.println("devicesIps" + devicesIps);
+        System.out.println("data"+data);
+        System.out.println("devices: "+ devices);             
+        
+        System.out.println("MW: devicesTotal=" + devicesTotal);
+        
+        mv.addObject("devicesIps", devicesIps);
+        mv.addObject("devicesTotal", devicesTotal);
+        mv.addObject("dataMonths", data);
+        mv.addObject("devices", devices);
+        mv.addObject("years", years);//27 aug 2012, add the years of data
+        
+        TreeMap<String, TreeMap<String, Long>> dataMonthsDevices = this.getDataMonthsDevices(data);//for each month the devices data, not for each device
+        mv.addObject("dataMonthsDevices", dataMonthsDevices);//dashboard
+        
+        */
+        return mv;
+    }
+    
+    public ArrayList<DateDeviceUsage> getDateDeviceUsage(TreeMap<Integer, Long> usage, boolean months)
+    {
+        ArrayList<DateDeviceUsage> usageDate = new ArrayList();
+        System.out.println("usage for device is: " + usage);
+        for (int date: usage.keySet())
+        {
+            DateDeviceUsage ddu = new DateDeviceUsage(date+"", usage.get(date));
+            if (months)
+            {
+                MONTHS m = MONTHS.get(date);
+                String dateText = m.name();
+                ddu.setDate(dateText);
+                usageDate.add(ddu);
+            }
+        }
+        System.out.println("date usage: " + usageDate);
+        return usageDate;
+    }
+    
+    //20 july 2012
+    private TreeMap<String, TreeMap<String, Long>> getDataMonthsDevices(TreeMap<String, TreeMap<Integer, TreeMap<Integer, Long>>> data) {
+        TreeMap<String, TreeMap<String, Long>> dataMonths = new TreeMap();
+        for (String device: data.keySet()){
+            TreeMap<Integer, TreeMap<Integer, Long>> deviceData = data.get(device);
+            for (int year: deviceData.keySet())
+            {
+                TreeMap<Integer, Long> deviceDataMonth = deviceData.get(year);
+                for (int month: deviceDataMonth.keySet())
+                {
+                    long usage = deviceDataMonth.get(month);
+                    TreeMap<String, Long> dataMonth = new TreeMap<String, Long>();
+                    
+                    String monthName = ""+month;//MONTHS.get(month).name();
+                    
+                    if (dataMonths.containsKey(monthName))
+                        dataMonth = dataMonths.get(monthName);
+                    
+                    dataMonth.put(device, usage);
+                    
+                    dataMonths.put(monthName, dataMonth);
+                    
+                }
+            }
+        }
+        
+        System.out.println("DATA MONTHS: "+dataMonths);
+        return dataMonths;
+    }
 }

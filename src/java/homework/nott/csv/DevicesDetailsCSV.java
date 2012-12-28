@@ -17,7 +17,7 @@ public class DevicesDetailsCSV {
     //private CSVParser csv = new CSVParser();
     MySQLAccessData mysql = new MySQLAccessData();//17 sept 2012
     
-    public ArrayList<Device> getDevices(Set<String> ips){
+    public ArrayList<Device> getDevicesLive(Set<String> ips){
         ArrayList<Device> devices = new ArrayList();
         
         TreeMap<String, TreeMap<Integer, TreeMap<Integer, TreeMap<Integer, TreeMap<Integer, Long>>>>> usage 

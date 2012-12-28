@@ -12,7 +12,6 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import homework.nott.device.DeviceData;
-import homework.nott.mysql.HWDataToMySQL;
 import java.sql.Timestamp;
 import java.util.*;
 
@@ -20,22 +19,45 @@ import java.util.*;
  *
  * @author pszgp, 27 june 2012, 09:53 am, 11-12july2012 add new functions, comment old functions!!!
  */
-public class CSVParser {
+public class CSVParserStaticData {
     
-    private String pathFile = "data/HW/";
-    private String extensionFile = "_sql_.csv";
+    public final String dataStaticFolder = "data/hwdatalondonv2/";
     
-    public CSVParser(){}
-    public CSVParser(String path, String extension)
+    public void createCSVFilesFromData(String folderName)
     {
-        this.pathFile = path;
-        this.extensionFile = extension;
+        if (folderName==null)
+            folderName = dataStaticFolder;
+        File folder = new File(folderName);
+        
+        if (!folder.isDirectory()) 
+            return;
+        
+        File[] files = folder.listFiles();
+        for (File f: files)
+        {
+            if (f.isDirectory())
+                createCSVFilesFromData(f.getName());
+            if (f.isFile())
+            {
+                if (f.getName()!=null)
+                    if (f.getName().endsWith(".data"))
+                        saveDataFromFile(f);
+            }
+        }
     }
+    
+    public void saveDataFromFile(File f)
+    {
+        if (!f.isFile()) 
+            return;
+        
+    }
+    
     //12 july 2012
-    /*public ArrayList<TreeMap<String, Object>> getRecords(String table)
+    public ArrayList<TreeMap<String, Object>> getRecords(String table)
     {
         ArrayList<TreeMap<String, Object>> records = new ArrayList();
-        String file = "data/London/"+table+".csv";//"data/HW/"+table+"_sql_.csv";
+        String file = "data/London/"+table+".csv";
         try {
             //System.out.println(file);
             //System.out.println(new File(file).getAbsolutePath());
@@ -43,11 +65,13 @@ public class CSVParser {
             String line=null;
             int countLine=0;
             String[] fields = null;
-            fields = HWDataToMySQL.TABLES.valueOf(table).getFields();//30 aug. 2012
             while((line=br.readLine())!=null)
             {
                 countLine++;
-                
+                if (countLine==1){        
+                    fields = line.split(",");
+                    continue;
+                }
                 if (fields == null)
                     return records;
                 String[] items = line.split(",");
@@ -67,10 +91,9 @@ public class CSVParser {
         }
         return records;
     }
-    
-    
+        
     //11 july 2012
-    String fileSums = "data/London/flows_sums.csv";
+    String fileSumsStatic = dataStaticFolder+"/flows_sums.csv";
                     //"data/HW/flows_sums_.csv";//on server (copy the file on server first)
     //String fileSums = "web/data/flows_sums_.csv";//local: 
 
@@ -119,7 +142,7 @@ public class CSVParser {
         
         BufferedReader br;
         try {
-            br = new BufferedReader(new FileReader(fileSums));
+            br = new BufferedReader(new FileReader(fileSumsStatic));
             
             String line = null;
             int countLine = 0;
@@ -132,7 +155,7 @@ public class CSVParser {
                         line = line.replaceAll("\"", "");//28 aug 2012
                 line = line.trim();
                 
-                //System.out.println(line);
+                System.out.println(line);
                     
                 String[] items = line.split(",");
                 //The fields are: deviceIp,year,month,day,hour,nbytes
@@ -143,8 +166,8 @@ public class CSVParser {
                     //if (deviceIp.startsWith("\""))
                     //    deviceIp = deviceIp.substring(1);
                     
-                    //System.out.println(deviceIp);
-                    //System.out.println(devicesIps + " " + (devicesIps.contains(deviceIp)));
+                    System.out.println(deviceIp);
+                    System.out.println(devicesIps + " " + (devicesIps.contains(deviceIp)));
                     //System.exit(0);
                     if (!devicesIps.contains(deviceIp))
                         continue;//ignore ips from devices outside the network
@@ -185,7 +208,7 @@ public class CSVParser {
                     
                     devicesUsage.put(deviceIp, device);
                     
-                    //System.out.println("fileSums - line: " + line);
+                    System.out.println("fileSums - line: " + line);
                 
                 }
             }
@@ -409,8 +432,44 @@ public class CSVParser {
         }
         //System.out.println(devicesUsageYears);
         return devicesUsageYears;
-    }    
-      
+    }
+    
+    /*public String CSVtoString(TreeMap map)
+    {
+        String text=null;
+        if (map!=null)
+        {
+            for (Object o1: map.keySet())
+            {
+                Object o2 = map.get(o1);
+                text+=o1+",";
+                if (o1 instanceof TreeMap){
+                    Object o3 = ((TreeMap)o1).get(o2);
+                    text+=o2+",";
+                    if (o2 instanceof TreeMap){
+                        Object o4 = ((TreeMap)o2).get(o3);
+                        text+=o3+",";
+                        if (o4 instanceof TreeMap){
+                            Object o5 = ((TreeMap)o3).get(o4);
+                            text+=o4+",";
+                            if (o2 instanceof TreeMap){
+                                Object o6 = ((TreeMap)o4).get(o5);
+                                text+=o5+",";
+                                text+=o6;
+                                text+="\n";
+                            }
+                            text+="\n";    
+                        }
+                        text+="\n";
+                    }
+                    text+="\n";
+                }
+                text+="\n";
+            }
+        }
+        return text;
+    }*/
+    
     public TreeMap<String, Long> getTotalUsageDevices(TreeMap<String, TreeMap<Integer, TreeMap<Integer, TreeMap<Integer, TreeMap<Integer, Integer>>>>> usage)
     {
         TreeMap<String, Long> totalUsage = new TreeMap();
@@ -442,7 +501,7 @@ public class CSVParser {
     {     
         System.out.println();
         System.exit(0);
-        CSVParser csv = new CSVParser();
+        CSVParserStaticData csv = new CSVParserStaticData();
         //System.out.println(csv.getRecords("DeviceNames"));
         System.out.println(csv.getUrlsForIps(csv.getDevicesIps()));
         System.exit(0);
@@ -515,14 +574,80 @@ public class CSVParser {
                 Logger.getLogger(CSVParser.class.getName()).log(Level.SEVERE, null, ex);
             }
             //type.put("properties", properties);
-            jsonData.put("type", type);                  
+            jsonData.put("type", type);
+            /*
+             {
+        "type": {
+            "properties": {
+            "name": {"name": "Device Name", "type": "string" },
+            "uri": {"name": "Visited websites", "type": "string" },
+            "nbytes": { "name": "Number of bytes", "type": "number" },
+            "nuris": { "name": "Number of visited websites", "type": "number" }
+            },
+            "indexes": {
+            "by_name": ["name"]
+            }
+        },
+        "objects": [
+            {
+            "_id": "d1",
+            "name": "Device_1",
+            "devices": ["google.co.uk", "mrl.nott.ac.uk"],
+            "nbytes": 83,
+            "nuris": 20
+            },
+            {
+            "_id": "d2",
+            "name": "Device_2",
+            "languages": ["google.co.uk"],
+            "nbytes": 82,
+            "nuris": 10
+            },
+            {
+            "_id": "d3",
+            "name": "Device_3",
+            "languages": ["google.co.uk", "microsoft.com", "guardian.co.uk", "linkedin.com", "bbc.co.uk"],
+            "nbytes": 311,
+            "nuris": 50
+            },
+            {
+            "_id": "d4",
+            "name": "Device_4",
+            "languages": ["microsoft.com"],
+            "nbytes": 62.3,
+            "nuris": 10
+            },
+            {
+            "_id": "d5",
+            "name": "Device_5",
+            "languages": ["guardian.co.uk"],
+            "nbytes": 30.6,
+            "nuris": 10
+            },
+            {
+            "_id": "d6",
+            "name": "Device_6",
+            "languages": ["microsoft.com", "bbc.co.uk", "guardian.co.uk"],
+            "nbytes": 40.1,
+            "nuris": 30
+            }
+        ]
+        };  
+             
+             */
+                        
             
-               
+      /*  } catch (FileNotFoundException ex) {
+            Logger.getLogger(CSVParser.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+                Logger.getLogger(CSVParser.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            * */            
     }
 
     //12 july 2012: filter records and let only those with a specific field
     //e.g. save only ips that are in the source address
-    public ArrayList<TreeMap<String, Object>> filterRecordsForField(Set<String> ipList, ArrayList<TreeMap<String, Object>> records, String field) {
+    ArrayList<TreeMap<String, Object>> filterRecordsForField(Set<String> ipList, ArrayList<TreeMap<String, Object>> records, String field) {
         ArrayList<TreeMap<String, Object>> filteredRecords = new ArrayList();
         for (TreeMap<String, Object> record: records)
         {
@@ -536,7 +661,7 @@ public class CSVParser {
         return filteredRecords;
     }
 
-    public ArrayList<DeviceData> getDevicesDownload(Set<String> ipList, ArrayList<TreeMap<String, Object>> flows) {
+    ArrayList<DeviceData> getDevicesDownload(Set<String> ipList, ArrayList<TreeMap<String, Object>> flows) {
         ArrayList<DeviceData> devices = new ArrayList();
         for (TreeMap<String, Object> record: flows)
         {
@@ -605,5 +730,5 @@ public class CSVParser {
             }
         }
         return urls;
-    }*/
+    }
 }

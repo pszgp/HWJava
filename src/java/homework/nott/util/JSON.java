@@ -23,22 +23,26 @@ import java.util.TreeMap;
 public class JSON {
 
     //31 july 2012: convert the csv format into json
-    public static void convertArraytoJSON(TreeMap data, String jsonFile)
+    public static String convertArraytoJSON(TreeMap data, String jsonFile)
     {
         String jsonText = convertArraytoJSON(data, 0);
         String path = "";//webapps/homedashboard/js/sunburstchart/";
             //"webapps/Homeworkdashboard/js/sunburstchart/";
         System.out.println("json text: "+jsonText);
         try{
-            //System.out.println("current path: "+new File(".").getAbsolutePath());
-            BufferedWriter bw = new BufferedWriter(new FileWriter(path+jsonFile));
-            bw.write(jsonText);
-            bw.flush();
-            bw.close();
+            if (jsonFile!=null)
+            {
+                //System.out.println("current path: "+new File(".").getAbsolutePath());
+                BufferedWriter bw = new BufferedWriter(new FileWriter(path+jsonFile));
+                bw.write(jsonText);
+                bw.flush();
+                bw.close();
+            }
         }catch(IOException e)
         {
             e.printStackTrace();
         }
+        return jsonText;
     }
     //31 july 2012
     public static String convertArraytoJSON(TreeMap data, int level)
